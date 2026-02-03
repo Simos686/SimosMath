@@ -385,7 +385,40 @@ app.post('/api/exercises/submit', authenticateToken, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+// Juste avant la gestion d'erreur 404, ajoutez :
 
+// Route racine améliorée
+app.get('/', (req, res) => {
+    res.json({
+        message: 'API SimosMaths - Bienvenue',
+        version: '1.0.0',
+        status: 'online',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+            health: '/api/health',
+            auth: 'Require token',
+            subscriptions: {
+                create: 'POST /api/subscriptions/create',
+                cancel: 'POST /api/subscriptions/cancel'
+            },
+            trial: 'POST /api/trial/start',
+            exercises: 'GET /api/exercises',
+            videos: 'GET /api/videos',
+            dashboard: 'GET /api/dashboard/stats'
+        },
+        docs: 'https://github.com/votre-repo/docs'
+    });
+});
+
+// Route de test publique
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'healthy',
+        service: 'SimosMaths API',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
 // =================== GESTION DES ERREURS ===================
 
 // 404 - Route non trouvée
@@ -434,3 +467,4 @@ const startServer = async () => {
 };
 
 startServer();
+
