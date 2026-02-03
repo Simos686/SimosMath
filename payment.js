@@ -1,14 +1,10 @@
-// payment.js - Logique de paiement
+// payment.js - Version adaptée pour GitHub Pages
 import { supabase } from './supabase-client.js';
-import { createSubscriptionSession, startFreeTrial } from './stripe-handler.js';
-import { initStripe } from './config.js';
 
 class PaymentManager {
     constructor() {
         this.plan = 'excellence';
         this.period = 'monthly';
-        this.stripe = null;
-        this.cardElement = null;
         this.initialize();
     }
 
@@ -21,7 +17,6 @@ class PaymentManager {
             }
 
             await this.loadPlanDetails();
-            this.setupStripe();
             this.setupEventListeners();
             
         } catch (error) {
@@ -50,70 +45,16 @@ class PaymentManager {
         this.user = user;
 
         // Vérifier si l'utilisateur a déjà un abonnement
-        const { data: subscription } = await supabase
-            .from('subscriptions')
-            .select('*')
-            .eq('profile_id', user.id)
-            .in('status', ['active', 'trial'])
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('subscription_status')
+            .eq('id', user.id)
             .single();
 
-        if (subscription) {
+        if (profile?.subscription_status === 'active' || profile?.subscription_status === 'trial') {
             // Rediriger vers le dashboard
             window.location.href = 'dashboard.html';
         }
-    }
-
-    setupStripe() {
-        // Initialiser Stripe
-        this.stripe = initStripe();
-        
-        if (!this.stripe) {
-            console.error('Stripe non initialisé');
-            this.showError('Le service de paiement n\'est pas disponible');
-            return;
-        }
-
-        // Créer les éléments Stripe
-        const elements = this.stripe.elements();
-        
-        const style = {
-            base: {
-                color: '#32325d',
-                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                fontSize: '16px',
-                '::placeholder': {
-                    color: '#aab7c4'
-                }
-            },
-            invalid: {
-                color: '#fa755a',
-                iconColor: '#fa755a'
-            }
-        };
-
-        this.cardElement = elements.create('card', { 
-            style: style,
-            hidePostalCode: true 
-        });
-        
-        const cardElementContainer = document.getElementById('card-element');
-        if (cardElementContainer) {
-            this.cardElement.mount('#card-element');
-        }
-
-        // Gérer les erreurs de carte
-        this.cardElement.on('change', (event) => {
-            const displayError = document.getElementById('card-errors');
-            if (displayError) {
-                if (event.error) {
-                    displayError.textContent = event.error.message;
-                    displayError.classList.remove('hidden');
-                } else {
-                    displayError.textContent = '';
-                    displayError.classList.add('hidden');
-                }
-            }
-        });
     }
 
     setupEventListeners() {
@@ -135,6 +76,16 @@ class PaymentManager {
             });
         }
 
+        // Changer de période
+        const periodButtons = document.querySelectorAll('[data-period]');
+        periodButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.period = e.currentTarget.dataset.period;
+                this.updatePlanDisplay();
+                this.highlightPeriodButton();
+            });
+        });
+
         // Validation des champs en temps réel
         const formInputs = document.querySelectorAll('#payment-form input[required]');
         formInputs.forEach(input => {
@@ -147,6 +98,19 @@ class PaymentManager {
         });
     }
 
+    highlightPeriodButton() {
+        const periodButtons = document.querySelectorAll('[data-period]');
+        periodButtons.forEach(btn => {
+            if (btn.dataset.period === this.period) {
+                btn.classList.add('bg-blue-500', 'text-white');
+                btn.classList.remove('bg-gray-100', 'text-gray-700');
+            } else {
+                btn.classList.remove('bg-blue-500', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-700');
+            }
+        });
+    }
+
     updatePlanDisplay() {
         const planNames = {
             decouverte: 'Formule Découverte',
@@ -155,9 +119,9 @@ class PaymentManager {
         };
 
         const prices = {
-            decouverte: { monthly: '7,99€', yearly: '79,90€' },
-            excellence: { monthly: '14,99€', yearly: '149,90€' },
-            famille: { monthly: '24,99€', yearly: '249,90€' }
+            decouverte: { monthly: 7.99, yearly: 79.90 },
+            excellence: { monthly: 14.99, yearly: 149.90 },
+            famille: { monthly: 24.99, yearly: 249.90 }
         };
 
         // Mettre à jour l'affichage
@@ -167,49 +131,100 @@ class PaymentManager {
         const savingsEl = document.getElementById('plan-savings');
 
         if (planNameEl) planNameEl.textContent = planNames[this.plan] || 'Formule Excellence';
-        if (planPriceEl) planPriceEl.textContent = prices[this.plan]?.[this.period] || '14,99€';
+        
+        if (planPriceEl) {
+            const price = prices[this.plan]?.[this.period] || 14.99;
+            planPriceEl.textContent = `${price.toFixed(2).replace('.', ',')}€`;
+        }
+        
         if (planPeriodEl) planPeriodEl.textContent = this.period === 'monthly' ? '/ mois' : '/ an';
         
         // Afficher les économies pour l'abonnement annuel
-        if (savingsEl && this.period === 'yearly') {
-            const monthlyPrice = parseInt(prices[this.plan]?.monthly?.replace(',', '.')) * 12;
-            const yearlyPrice = parseInt(prices[this.plan]?.yearly?.replace(',', '.'));
-            const savings = monthlyPrice - yearlyPrice;
-            if (savings > 0) {
-                savingsEl.textContent = `Économisez ${savings.toFixed(2)}€`;
-                savingsEl.classList.remove('hidden');
+        if (savingsEl) {
+            if (this.period === 'yearly') {
+                const monthlyPrice = (prices[this.plan]?.monthly || 14.99) * 12;
+                const yearlyPrice = prices[this.plan]?.yearly || 149.90;
+                const savings = monthlyPrice - yearlyPrice;
+                
+                if (savings > 0) {
+                    savingsEl.textContent = `Économisez ${savings.toFixed(2).replace('.', ',')}€`;
+                    savingsEl.classList.remove('hidden');
+                }
+            } else {
+                savingsEl.classList.add('hidden');
             }
         }
+        
+        // Mettre en surbrillance le bouton de période
+        this.highlightPeriodButton();
     }
 
     async handlePaymentSubmit() {
         try {
-            this.showLoading('Traitement du paiement...');
+            this.showLoading('Redirection vers le paiement...');
 
             // Valider le formulaire
             if (!this.validateForm()) {
                 throw new Error('Veuillez corriger les erreurs du formulaire');
             }
 
-            // Récupérer les informations client
-            const formData = {
-                firstName: document.getElementById('first-name').value.trim(),
-                lastName: document.getElementById('last-name').value.trim(),
-                email: document.getElementById('email').value.trim()
-            };
-
-            // Créer la session de paiement
-            await createSubscriptionSession(
-                this.plan,
-                this.period,
-                formData
-            );
+            // Option 1: Si vous avez une API backend déployée
+            await this.createStripeSession();
+            
+            // Option 2: Si pas d'API, rediriger vers une page "maintenance paiement"
+            // window.location.href = 'payment-maintenance.html';
 
         } catch (error) {
             console.error('Erreur paiement:', error);
             this.showError('Erreur lors du paiement: ' + error.message);
         } finally {
             this.hideLoading();
+        }
+    }
+
+    async createStripeSession() {
+        try {
+            // Récupérer le token d'authentification
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session?.access_token) {
+                throw new Error('Non authentifié');
+            }
+
+            // Définir l'URL de votre API (à adapter)
+            const API_BASE_URL = 'https://simosmath.onrender.com/'; // ⚠️ À CHANGER
+            
+            // Appeler votre API backend
+            const response = await fetch(`${API_BASE_URL}/api/subscriptions/create`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    plan: this.plan,
+                    period: this.period,
+                    successUrl: `${window.location.origin}/payment-success.html`,
+                    cancelUrl: `${window.location.origin}/tarifs.html`
+                })
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Erreur lors de la création de la session');
+            }
+
+            // Rediriger vers Stripe Checkout
+            if (result.url) {
+                window.location.href = result.url;
+            } else {
+                throw new Error('URL de redirection non reçue');
+            }
+
+        } catch (error) {
+            console.error('Erreur création session Stripe:', error);
+            throw error;
         }
     }
 
@@ -222,22 +237,8 @@ class PaymentManager {
                 throw new Error('Veuillez corriger les erreurs du formulaire');
             }
 
-            // Récupérer les informations client
-            const formData = {
-                firstName: document.getElementById('first-name').value.trim(),
-                lastName: document.getElementById('last-name').value.trim(),
-                email: document.getElementById('email').value.trim()
-            };
-
             // Démarrer l'essai
-            const result = await startFreeTrial(this.plan, formData);
-            
-            if (result.success) {
-                // Rediriger vers la page de succès
-                window.location.href = 'payment-success.html?trial=true&plan=' + this.plan;
-            } else {
-                throw new Error(result.error || 'Erreur lors du démarrage de l\'essai');
-            }
+            await this.startTrial();
 
         } catch (error) {
             console.error('Erreur essai:', error);
@@ -245,6 +246,65 @@ class PaymentManager {
         } finally {
             this.hideLoading();
         }
+    }
+
+    async startTrial() {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session?.access_token) {
+                throw new Error('Non authentifié');
+            }
+
+            // Option 1: Avec API backend
+            const API_BASE_URL = 'https://votre-api.railway.app'; // ⚠️ À CHANGER
+            
+            const response = await fetch(`${API_BASE_URL}/api/trial/start`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${session.access_token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ plan: this.plan })
+            });
+
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.error || 'Erreur lors du démarrage de l\'essai');
+            }
+
+            // Option 2: Sans API backend (simulation)
+            // await this.simulateTrialStart();
+
+            // Rediriger vers la page de succès
+            window.location.href = 'payment-success.html?trial=true&plan=' + this.plan;
+
+        } catch (error) {
+            console.error('Erreur démarrage essai:', error);
+            throw error;
+        }
+    }
+
+    async simulateTrialStart() {
+        // Simulation d'un essai gratuit sans API backend
+        const trialEnd = new Date();
+        trialEnd.setDate(trialEnd.getDate() + 7); // 7 jours d'essai
+        
+        // Mettre à jour le profil dans Supabase
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                subscription_tier: this.plan,
+                subscription_status: 'trial',
+                trial_ends_at: trialEnd.toISOString(),
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', user.id);
+
+        if (error) throw error;
     }
 
     validateForm() {
