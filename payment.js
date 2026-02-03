@@ -159,28 +159,27 @@ class PaymentManager {
         this.highlightPeriodButton();
     }
 
-    async handlePaymentSubmit() {
-        try {
-            this.showLoading('Redirection vers le paiement...');
-
-            // Valider le formulaire
-            if (!this.validateForm()) {
-                throw new Error('Veuillez corriger les erreurs du formulaire');
-            }
-
-            // Option 1: Si vous avez une API backend déployée
-            await this.createStripeSession();
-            
-            // Option 2: Si pas d'API, rediriger vers une page "maintenance paiement"
-            // window.location.href = 'payment-maintenance.html';
-
-        } catch (error) {
-            console.error('Erreur paiement:', error);
-            this.showError('Erreur lors du paiement: ' + error.message);
-        } finally {
-            this.hideLoading();
+    const result = await createSubscriptionSession(
+            this.plan,
+            this.period,
+            formData
+        );
+        
+        // Vérifier le résultat
+        if (result.success && result.url) {
+            // Rediriger vers la page de succès
+            window.location.href = result.url;
+        } else {
+            throw new Error(result.error || 'Erreur inconnue');
         }
+
+    } catch (error) {
+        console.error('Erreur paiement:', error);
+        this.showError('Erreur lors du paiement: ' + error.message);
+    } finally {
+        this.hideLoading();
     }
+}
 
     async createStripeSession() {
         try {
