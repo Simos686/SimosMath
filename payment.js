@@ -1,6 +1,7 @@
 // payment.js - Version adaptée pour GitHub Pages
 import { supabase } from './supabase-client.js';
 import { createSubscriptionSession, startFreeTrial } from './stripe-handler.js';
+
 class PaymentManager {
     constructor() {
         this.plan = 'excellence';
@@ -159,121 +160,77 @@ class PaymentManager {
         this.highlightPeriodButton();
     }
 
-    const result = await createSubscriptionSession(
-            this.plan,
-            this.period,
-            formData
-        );
-        
-        // Vérifier le résultat
-        if (result.success && result.url) {
-            // Rediriger vers la page de succès
-            window.location.href = result.url;
-        } else {
-            throw new Error(result.error || 'Erreur inconnue');
-        }
+    async handlePaymentSubmit() {
+        try {
+            this.showLoading('Traitement du paiement...');
 
-    } catch (error) {
-        console.error('Erreur paiement:', error);
-        this.showError('Erreur lors du paiement: ' + error.message);
-    } finally {
-        this.hideLoading();
-    }
-}
-
-            const result = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(result.error || 'Erreur lors de la création de la session');
+            // Valider le formulaire
+            if (!this.validateForm()) {
+                throw new Error('Veuillez corriger les erreurs du formulaire');
             }
 
-            // Rediriger vers Stripe Checkout
-            if (result.url) {
+            // Récupérer les informations client
+            const formData = {
+                firstName: document.getElementById('first-name').value.trim(),
+                lastName: document.getElementById('last-name').value.trim(),
+                email: document.getElementById('email').value.trim()
+            };
+
+            // Créer la session de paiement
+            const result = await createSubscriptionSession(
+                this.plan,
+                this.period,
+                formData
+            );
+            
+            // Vérifier le résultat
+            if (result.success && result.url) {
+                // Rediriger vers la page de succès
                 window.location.href = result.url;
             } else {
-                throw new Error('URL de redirection non reçue');
+                throw new Error(result.error || 'Erreur inconnue');
             }
 
         } catch (error) {
-            console.error('Erreur création session Stripe:', error);
-            throw error;
+            console.error('Erreur paiement:', error);
+            this.showError('Erreur lors du paiement: ' + error.message);
+        } finally {
+            this.hideLoading();
         }
     }
 
-   const result = await startFreeTrial(this.plan, formData);
-        
-        if (result.success) {
-            // Rediriger vers la page de succès
-            window.location.href = 'payment-success.html?trial=true&plan=' + this.plan;
-        } else {
-            throw new Error(result.error || 'Erreur lors du démarrage de l\'essai');
-        }
-
-    } catch (error) {
-        console.error('Erreur essai:', error);
-        this.showError('Erreur lors du démarrage de l\'essai: ' + error.message);
-    } finally {
-        this.hideLoading();
-    }
-}
-
-    async startTrial() {
+    async handleTrialStart() {
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (!session?.access_token) {
-                throw new Error('Non authentifié');
+            this.showLoading('Démarrage de l\'essai...');
+
+            // Valider le formulaire
+            if (!this.validateForm()) {
+                throw new Error('Veuillez corriger les erreurs du formulaire');
             }
 
-            // Option 1: Avec API backend
-            const API_BASE_URL = 'https://votre-api.railway.app'; // ⚠️ À CHANGER
-            
-            const response = await fetch(`${API_BASE_URL}/api/trial/start`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${session.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ plan: this.plan })
-            });
+            // Récupérer les informations client
+            const formData = {
+                firstName: document.getElementById('first-name').value.trim(),
+                lastName: document.getElementById('last-name').value.trim(),
+                email: document.getElementById('email').value.trim()
+            };
 
-            const result = await response.json();
+            // Démarrer l'essai
+            const result = await startFreeTrial(this.plan, formData);
             
-            if (!response.ok) {
+            if (result.success) {
+                // Rediriger vers la page de succès
+                window.location.href = 'payment-success.html?trial=true&plan=' + this.plan;
+            } else {
                 throw new Error(result.error || 'Erreur lors du démarrage de l\'essai');
             }
 
-            // Option 2: Sans API backend (simulation)
-            // await this.simulateTrialStart();
-
-            // Rediriger vers la page de succès
-            window.location.href = 'payment-success.html?trial=true&plan=' + this.plan;
-
         } catch (error) {
-            console.error('Erreur démarrage essai:', error);
-            throw error;
+            console.error('Erreur essai:', error);
+            this.showError('Erreur lors du démarrage de l\'essai: ' + error.message);
+        } finally {
+            this.hideLoading();
         }
-    }
-
-    async simulateTrialStart() {
-        // Simulation d'un essai gratuit sans API backend
-        const trialEnd = new Date();
-        trialEnd.setDate(trialEnd.getDate() + 7); // 7 jours d'essai
-        
-        // Mettre à jour le profil dans Supabase
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        const { error } = await supabase
-            .from('profiles')
-            .update({
-                subscription_tier: this.plan,
-                subscription_status: 'trial',
-                trial_ends_at: trialEnd.toISOString(),
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', user.id);
-
-        if (error) throw error;
     }
 
     validateForm() {
