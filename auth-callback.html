@@ -5,77 +5,277 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - SimosMaths</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .spinner {
             animation: spin 1s linear infinite;
         }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
-    <div class="text-center">
-        <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full spinner mx-auto mb-6"></div>
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">Connexion en cours...</h1>
-        <p class="text-gray-600 mb-6">Veuillez patienter pendant que nous vous connectons.</p>
-        
-        <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-            <p id="error-text"></p>
-        </div>
-        
-        <div class="text-sm text-gray-500">
-            Si la redirection ne fonctionne pas, 
-            <a href="/dashboard.html" class="text-blue-600 hover:underline">cliquez ici</a>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full fade-in">
+        <div class="text-center">
+            <!-- Logo/Spinner -->
+            <div class="relative mb-6">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                    <div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full spinner"></div>
+                </div>
+                <div class="absolute -inset-4 bg-blue-100 rounded-full -z-10 pulse"></div>
+            </div>
+            
+            <!-- Titre et message -->
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-user-check mr-2 text-blue-600"></i>
+                Connexion en cours
+            </h1>
+            <p class="text-gray-600 mb-6">
+                Patientez pendant que nous vérifions vos informations...
+            </p>
+            
+            <!-- État de connexion -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                <div class="flex items-center justify-center space-x-3">
+                    <div class="flex-1">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                            <span class="text-sm font-medium text-blue-800">Authentification</span>
+                        </div>
+                        <div class="flex items-center mt-2">
+                            <div class="w-3 h-3 bg-blue-300 rounded-full mr-2"></div>
+                            <span class="text-sm text-blue-600">Redirection</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-shield-check text-blue-500 text-xl"></i>
+                </div>
+            </div>
+            
+            <!-- Message d'erreur -->
+            <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-3"></i>
+                    <div>
+                        <p id="error-text" class="font-medium"></p>
+                        <p class="text-sm mt-1">Redirection dans <span id="countdown">5</span> secondes...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Boutons de secours -->
+            <div id="fallback-buttons" class="hidden space-y-3 mt-6">
+                <a href="auth.html" 
+                   class="block w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition duration-300">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Retour à la connexion
+                </a>
+                <a href="dashboard.html" 
+                   class="block w-full py-3 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition duration-300">
+                    <i class="fas fa-tachometer-alt mr-2"></i>
+                    Accéder au tableau de bord
+                </a>
+            </div>
+            
+            <!-- Information -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <p class="text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Si la redirection ne fonctionne pas automatiquement,
+                    utilisez les boutons ci-dessus.
+                </p>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { supabase } from './supabase-client.js';
 
+        // Fonction pour gérer le callback d'authentification
         async function handleAuthCallback() {
             try {
-                // Récupérer le hash de l'URL
-                const hash = window.location.hash;
+                console.log('🔍 Traitement du callback d\'authentification...');
                 
-                if (!hash) {
-                    throw new Error('Aucune information d\'authentification trouvée');
+                // 1. Vérifier si l'utilisateur est déjà connecté
+                const { data: { session: existingSession } } = await supabase.auth.getSession();
+                
+                if (existingSession) {
+                    console.log('✅ Session existante détectée, redirection...');
+                    redirectToDashboard();
+                    return;
                 }
-
-                // Traiter le retour d'authentification
-                const { data, error } = await supabase.auth.getSession();
+                
+                // 2. Essayer de récupérer la session depuis l'URL
+                const hash = window.location.hash;
+                const searchParams = new URLSearchParams(window.location.search);
+                
+                console.log('📊 Paramètres URL:', { 
+                    hash: hash ? 'Présent' : 'Absent',
+                    searchParams: searchParams.toString() || 'Aucun'
+                });
+                
+                // 3. Si pas de hash, vérifier les paramètres d'erreur
+                if (!hash && !searchParams.toString()) {
+                    // Vérifier si c'est un retour OAuth
+                    const hasError = searchParams.get('error');
+                    const hasCode = searchParams.get('code');
+                    
+                    if (hasError) {
+                        throw new Error(`Erreur OAuth: ${searchParams.get('error_description') || hasError}`);
+                    }
+                    
+                    if (!hasCode) {
+                        console.log('ℹ️ Aucune donnée d\'authentification dans l\'URL');
+                        // Vérifier à nouveau la session
+                        const { data: { session } } = await supabase.auth.getSession();
+                        
+                        if (session) {
+                            redirectToDashboard();
+                            return;
+                        } else {
+                            throw new Error('Aucune information d\'authentification trouvée');
+                        }
+                    }
+                }
+                
+                // 4. Tenter de récupérer la session
+                const { data: { session }, error } = await supabase.auth.getSession();
                 
                 if (error) {
+                    console.error('❌ Erreur récupération session:', error);
                     throw error;
                 }
-
-                if (data.session) {
-                    // Connexion réussie, rediriger vers le dashboard
-                    setTimeout(() => {
-                        window.location.href = '/dashboard.html';
-                    }, 1500);
+                
+                if (session) {
+                    console.log('✅ Connexion réussie!', {
+                        user: session.user.email,
+                        expires: new Date(session.expires_at * 1000).toLocaleString()
+                    });
+                    
+                    // Attendre un peu pour que l'utilisateur voie le message
+                    setTimeout(redirectToDashboard, 1000);
+                    
                 } else {
-                    throw new Error('Session non valide');
+                    console.warn('⚠️ Aucune session valide');
+                    
+                    // Essayer une dernière fois avec refresh
+                    try {
+                        await supabase.auth.refreshSession();
+                        const { data: { session: refreshedSession } } = await supabase.auth.getSession();
+                        
+                        if (refreshedSession) {
+                            setTimeout(redirectToDashboard, 1000);
+                        } else {
+                            throw new Error('Impossible d\'établir une session');
+                        }
+                    } catch (refreshError) {
+                        throw refreshError;
+                    }
                 }
 
             } catch (error) {
-                console.error('Erreur callback:', error);
-                
-                // Afficher le message d'erreur
-                document.getElementById('error-text').textContent = 
-                    'Erreur de connexion: ' + error.message;
-                document.getElementById('error-message').classList.remove('hidden');
-                
-                // Rediriger vers la page de connexion après 5 secondes
-                setTimeout(() => {
-                    window.location.href = '/auth.html';
-                }, 5000);
+                console.error('❌ Erreur callback:', error);
+                showError(error.message || 'Erreur de connexion');
             }
         }
 
-        // Exécuter lors du chargement de la page
-        document.addEventListener('DOMContentLoaded', handleAuthCallback);
+        // Redirection vers le dashboard
+        function redirectToDashboard() {
+            console.log('🔄 Redirection vers dashboard...');
+            
+            // Utiliser un chemin relatif pour GitHub Pages
+            const dashboardUrl = 'dashboard.html';
+            
+            // Vérifier s'il y a une redirection planifiée
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectTo = urlParams.get('redirect_to');
+            
+            if (redirectTo && ['dashboard', 'payment', 'profile'].includes(redirectTo)) {
+                window.location.href = redirectTo + '.html';
+            } else {
+                window.location.href = dashboardUrl;
+            }
+        }
+
+        // Afficher une erreur
+        function showError(message) {
+            console.error('💥 Erreur affichée:', message);
+            
+            const errorEl = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            const fallbackButtons = document.getElementById('fallback-buttons');
+            const countdownEl = document.getElementById('countdown');
+            
+            errorText.textContent = message;
+            errorEl.classList.remove('hidden');
+            fallbackButtons.classList.remove('hidden');
+            
+            // Compte à rebours pour la redirection
+            let countdown = 5;
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownEl.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = 'auth.html';
+                }
+            }, 1000);
+        }
+
+        // Vérifier l'état de Supabase
+        async function checkSupabaseConnection() {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('count')
+                    .limit(1);
+                
+                if (error) {
+                    console.warn('⚠️ Connexion Supabase limitée:', error.message);
+                    // Continuer quand même, l'auth peut fonctionner
+                } else {
+                    console.log('✅ Connexion Supabase vérifiée');
+                }
+            } catch (error) {
+                console.error('❌ Impossible de vérifier Supabase:', error);
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Initialisation auth-callback.html');
+            
+            // Vérifier rapidement la connexion
+            await checkSupabaseConnection();
+            
+            // Gérer le callback
+            await handleAuthCallback();
+            
+            // Timeout de sécurité
+            setTimeout(() => {
+                if (!window.location.href.includes('dashboard.html') && 
+                    !window.location.href.includes('auth.html')) {
+                    console.warn('⚠️ Timeout, redirection vers auth');
+                    showError('La connexion a pris trop de temps');
+                }
+            }, 10000); // 10 secondes max
+        });
     </script>
 </body>
 </html>
