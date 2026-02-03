@@ -3,12 +3,12 @@ const CONFIG = {
     // Supabase Configuration - À COMPLÉTER AVEC VOS VRAIES CLÉS
     SUPABASE: {
         URL: 'https://kgmtlwvqidhavehgsbwb.supabase.co',
-        ANON_KEY: 'INSÉREZ-VOTRE-CLÉ-ANON-ICI' // ⚠️ À REMPLACER
+        ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtnbXRsd3ZxaWRoYXZlaGdzYndiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwNTkxODgsImV4cCI6MjA4NTYzNTE4OH0.cJzTWt50XhZmnLHJrWObE6emYORyr8n-pmMT7dCdvKU' // ⚠️ À REMPLACER
     },
     
     // Stripe Configuration
     STRIPE: {
-        PUBLISHABLE_KEY: 'pk_test_votre_cle_publique', // ⚠️ À REMPLACER
+        PUBLISHABLE_KEY: 'pk_test_51S5wIk8W7xqYoZIBtlQnkJcWTAXeqVlDo4s3LWc8OpqLTSEaPu67wuyYC7goZgtRUnFZphaa7IUtHjHScH9eIkC300wh4oeTuQ', // ⚠️ À REMPLACER
         API_VERSION: '2023-10-16'
     },
     
@@ -25,7 +25,7 @@ const CONFIG = {
     // API Endpoints - IMPORTANT : Votre API doit être déployée ailleurs
     API: {
         // URL de votre API déployée (Railway, Render, Heroku, etc.)
-        BASE_URL: 'https://simosmaths-api.up.railway.app', // ⚠️ À REMPLACER
+        BASE_URL: 'https://simosmath.onrender.com', // ⚠️ À REMPLACER
         ENDPOINTS: {
             CREATE_SUBSCRIPTION: '/api/subscriptions/create',
             CANCEL_SUBSCRIPTION: '/api/subscriptions/cancel',
@@ -153,3 +153,4 @@ if (typeof window !== 'undefined') {
 }
 
 export default CONFIG;
+
