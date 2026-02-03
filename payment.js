@@ -1,6 +1,6 @@
 // payment.js - Version adaptée pour GitHub Pages
 import { supabase } from './supabase-client.js';
-
+import { createSubscriptionSession, startFreeTrial } from './stripe-handler.js';
 class PaymentManager {
     constructor() {
         this.plan = 'excellence';
