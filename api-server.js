@@ -1,4 +1,4 @@
-// api-server.js
+// api-server.js - À déployer SUR UN SERVEUR SÉPARÉ (Railway, Render, Heroku, Vercel)
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -11,15 +11,42 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
+// Middleware - AJOUTEZ VOTRE DOMAINE GITHUB ICI
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://votreusername.github.io', // VOTRE SITE GITHUB
+    'https://simosmaths.com', // VOTRE DOMAINE PERSONNALISÉ (optionnel)
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: function (origin, callback) {
+        // Autoriser les requêtes sans origine (comme Postman)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = `Origine ${origin} non autorisée par CORS`;
+            console.error('CORS bloqué:', origin);
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
     credentials: true
 }));
+
 app.use(express.json());
 app.use(express.static('public'));
 
-// Configuration
+// Configuration REQUISE
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+    console.error('❌ ERREUR: Variables Supabase manquantes dans .env');
+    process.exit(1);
+}
+
+if (!process.env.STRIPE_SECRET_KEY) {
+    console.error('❌ ERREUR: Clé Stripe manquante dans .env');
+    process.exit(1);
+}
+
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
@@ -44,7 +71,8 @@ async function authenticateToken(req, res, next) {
         const { data: { user }, error } = await supabase.auth.getUser(token);
         
         if (error || !user) {
-            return res.status(401).json({ error: 'Token invalide' });
+            console.error('Token invalide:', error?.message);
+            return res.status(401).json({ error: 'Token invalide ou expiré' });
         }
 
         req.user = user;
@@ -55,549 +83,29 @@ async function authenticateToken(req, res, next) {
     }
 }
 
-// =================== ROUTES ABONNEMENTS ===================
+// =================== ROUTES ESSENTIELLES POUR GITHUB ===================
 
 /**
- * Créer une session de paiement Stripe
+ * Route de test (public)
  */
-app.post('/api/subscriptions/create', authenticateToken, async (req, res) => {
-    try {
-        const { plan, period, customer, successUrl, cancelUrl } = req.body;
-        const userId = req.user.id;
-
-        // Vérifier si l'utilisateur existe dans Supabase
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', userId)
-            .single();
-
-        if (!profile) {
-            return res.status(404).json({ error: 'Profil utilisateur non trouvé' });
-        }
-
-        // Récupérer ou créer un client Stripe
-        let stripeCustomerId = null;
-        
-        if (profile.stripe_customer_id) {
-            stripeCustomerId = profile.stripe_customer_id;
-        } else {
-            const customer = await stripe.customers.create({
-                email: profile.email,
-                name: `${profile.first_name} ${profile.last_name}`,
-                metadata: {
-                    userId: userId,
-                    plan: plan
-                }
-            });
-            stripeCustomerId = customer.id;
-
-            // Mettre à jour le profil avec l'ID Stripe
-            await supabase
-                .from('profiles')
-                .update({ stripe_customer_id: customer.id })
-                .eq('id', userId);
-        }
-
-        // ID des prix Stripe (à configurer dans votre dashboard Stripe)
-        const priceIds = {
-            decouverte_monthly: process.env.STRIPE_PRICE_DECOUVERTE_MONTHLY,
-            decouverte_yearly: process.env.STRIPE_PRICE_DECOUVERTE_YEARLY,
-            excellence_monthly: process.env.STRIPE_PRICE_EXCELLENCE_MONTHLY,
-            excellence_yearly: process.env.STRIPE_PRICE_EXCELLENCE_YEARLY,
-            famille_monthly: process.env.STRIPE_PRICE_FAMILLE_MONTHLY,
-            famille_yearly: process.env.STRIPE_PRICE_FAMILLE_YEARLY
-        };
-
-        const priceId = priceIds[`${plan}_${period}`];
-        
-        if (!priceId) {
-            return res.status(400).json({ error: 'Formule invalide' });
-        }
-
-        // Créer la session de paiement
-        const session = await stripe.checkout.sessions.create({
-            customer: stripeCustomerId,
-            payment_method_types: ['card'],
-            line_items: [{
-                price: priceId,
-                quantity: 1,
-            }],
-            mode: 'subscription',
-            allow_promotion_codes: true,
-            subscription_data: {
-                trial_period_days: 7, // Essai gratuit de 7 jours
-                metadata: {
-                    userId: userId,
-                    plan: plan,
-                    period: period
-                }
-            },
-            success_url: successUrl,
-            cancel_url: cancelUrl,
-            metadata: {
-                userId: userId,
-                plan: plan,
-                period: period
-            }
-        });
-
-        res.json({ sessionId: session.id });
-
-    } catch (error) {
-        console.error('Erreur création session:', error);
-        res.status(500).json({ error: error.message });
-    }
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'healthy', 
+        service: 'SimosMaths API',
+        version: '1.0.0',
+        timestamp: new Date().toISOString()
+    });
 });
 
 /**
- * Démarrer un essai gratuit
- */
-app.post('/api/trial/start', authenticateToken, async (req, res) => {
-    try {
-        const { plan } = req.body;
-        const userId = req.user.id;
-
-        // Calculer la date de fin d'essai (7 jours)
-        const trialEndsAt = new Date();
-        trialEndsAt.setDate(trialEndsAt.getDate() + 7);
-
-        // Mettre à jour le profil
-        const { error } = await supabase
-            .from('profiles')
-            .update({
-                subscription_tier: plan,
-                subscription_status: 'trial',
-                trial_ends_at: trialEndsAt.toISOString()
-            })
-            .eq('id', userId);
-
-        if (error) throw error;
-
-        res.json({
-            success: true,
-            trialEndsAt: trialEndsAt.toISOString(),
-            message: 'Essai gratuit démarré avec succès'
-        });
-
-    } catch (error) {
-        console.error('Erreur démarrage essai:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-/**
- * Annuler un abonnement
- */
-app.post('/api/subscriptions/cancel', authenticateToken, async (req, res) => {
-    try {
-        const userId = req.user.id;
-
-        // Récupérer l'abonnement Stripe
-        const { data: subscription } = await supabase
-            .from('subscriptions')
-            .select('stripe_subscription_id')
-            .eq('profile_id', userId)
-            .eq('status', 'active')
-            .single();
-
-        if (!subscription) {
-            return res.status(404).json({ error: 'Abonnement actif non trouvé' });
-        }
-
-        // Annuler chez Stripe
-        await stripe.subscriptions.update(subscription.stripe_subscription_id, {
-            cancel_at_period_end: true
-        });
-
-        // Mettre à jour la base de données
-        await supabase
-            .from('subscriptions')
-            .update({
-                cancel_at_period_end: true,
-                status: 'canceled'
-            })
-            .eq('stripe_subscription_id', subscription.stripe_subscription_id);
-
-        res.json({
-            success: true,
-            message: 'Abonnement annulé avec succès'
-        });
-
-    } catch (error) {
-        console.error('Erreur annulation:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// =================== WEBHOOK STRIPE ===================
-
-app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    let event;
-
-    try {
-        event = stripe.webhooks.constructEvent(req.body, sig, STRIPE_WEBHOOK_SECRET);
-    } catch (err) {
-        console.error('Erreur webhook:', err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    // Gérer les événements Stripe
-    switch (event.type) {
-        case 'checkout.session.completed':
-            await handleCheckoutSessionCompleted(event.data.object);
-            break;
-            
-        case 'customer.subscription.created':
-        case 'customer.subscription.updated':
-            await handleSubscriptionUpdate(event.data.object);
-            break;
-            
-        case 'customer.subscription.deleted':
-            await handleSubscriptionDeleted(event.data.object);
-            break;
-            
-        case 'invoice.payment_succeeded':
-            await handleInvoicePaymentSucceeded(event.data.object);
-            break;
-            
-        case 'invoice.payment_failed':
-            await handleInvoicePaymentFailed(event.data.object);
-            break;
-    }
-
-    res.json({received: true});
-});
-
-// =================== HANDLERS WEBHOOK ===================
-
-async function handleCheckoutSessionCompleted(session) {
-    try {
-        const { userId, plan, period } = session.metadata;
-        
-        // Mettre à jour le profil utilisateur
-        await supabase
-            .from('profiles')
-            .update({
-                subscription_tier: plan,
-                subscription_status: 'active'
-            })
-            .eq('id', userId);
-
-        console.log(`Session checkout complétée pour l'utilisateur ${userId}`);
-    } catch (error) {
-        console.error('Erreur traitement checkout:', error);
-    }
-}
-
-async function handleSubscriptionUpdate(subscription) {
-    try {
-        const { userId, plan, period } = subscription.metadata;
-        
-        // Mettre à jour l'abonnement dans la base de données
-        await supabase
-            .from('subscriptions')
-            .upsert({
-                stripe_subscription_id: subscription.id,
-                stripe_customer_id: subscription.customer,
-                profile_id: userId,
-                plan: plan,
-                period: period,
-                status: subscription.status,
-                current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-                current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-                trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-                trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-                cancel_at_period_end: subscription.cancel_at_period_end,
-                amount: subscription.items.data[0].price.unit_amount,
-                currency: subscription.currency
-            });
-
-        console.log(`Abonnement ${subscription.id} mis à jour: ${subscription.status}`);
-    } catch (error) {
-        console.error('Erreur mise à jour abonnement:', error);
-    }
-}
-
-async function handleInvoicePaymentSucceeded(invoice) {
-    try {
-        // Enregistrer le paiement
-        await supabase
-            .from('payments')
-            .insert({
-                stripe_invoice_id: invoice.id,
-                stripe_payment_intent_id: invoice.payment_intent,
-                amount: invoice.amount_paid,
-                currency: invoice.currency,
-                status: 'succeeded',
-                receipt_url: invoice.hosted_invoice_url
-            });
-
-        console.log(`Paiement réussi pour la facture ${invoice.id}`);
-    } catch (error) {
-        console.error('Erreur enregistrement paiement:', error);
-    }
-}
-
-// =================== ROUTES DASHBOARD ===================
-
-/**
- * Récupérer les statistiques du dashboard
- */
-app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
-    try {
-        const userId = req.user.id;
-
-        // Récupérer le profil
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', userId)
-            .single();
-
-        // Récupérer les enfants
-        const { data: children } = await supabase
-            .from('children')
-            .select('*')
-            .eq('parent_id', userId);
-
-        // Récupérer les statistiques des enfants
-        const childrenStats = await Promise.all(
-            children.map(async (child) => {
-                const { data: exercises } = await supabase
-                    .from('exercise_sessions')
-                    .select('score, correct')
-                    .eq('child_id', child.id);
-
-                const { data: videos } = await supabase
-                    .from('video_watch_history')
-                    .select('watched_seconds')
-                    .eq('child_id', child.id);
-
-                const totalExercises = exercises?.length || 0;
-                const correctExercises = exercises?.filter(e => e.correct).length || 0;
-                const totalVideoTime = videos?.reduce((sum, v) => sum + v.watched_seconds, 0) || 0;
-
-                return {
-                    ...child,
-                    stats: {
-                        totalExercises,
-                        correctExercises,
-                        successRate: totalExercises > 0 ? Math.round((correctExercises / totalExercises) * 100) : 0,
-                        totalVideoTime: Math.round(totalVideoTime / 60) // Convertir en minutes
-                    }
-                };
-            })
-        );
-
-        // Calculer les totaux
-        const totals = childrenStats.reduce((acc, child) => {
-            return {
-                totalExercises: acc.totalExercises + child.stats.totalExercises,
-                correctExercises: acc.correctExercises + child.stats.correctExercises,
-                totalVideoTime: acc.totalVideoTime + child.stats.totalVideoTime
-            };
-        }, { totalExercises: 0, correctExercises: 0, totalVideoTime: 0 });
-
-        // Ajouter le taux de réussite global
-        totals.successRate = totals.totalExercises > 0 
-            ? Math.round((totals.correctExercises / totals.totalExercises) * 100) 
-            : 0;
-
-        res.json({
-            profile,
-            children: childrenStats,
-            totals,
-            subscription: {
-                tier: profile.subscription_tier,
-                status: profile.subscription_status,
-                trialEndsAt: profile.trial_ends_at,
-                isTrialActive: profile.trial_ends_at && new Date(profile.trial_ends_at) > new Date()
-            }
-        });
-
-    } catch (error) {
-        console.error('Erreur récupération stats:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// =================== ROUTES EXERCICES ===================
-
-/**
- * Récupérer les exercices
- */
-app.get('/api/exercises', async (req, res) => {
-    try {
-        const { level, subject, limit = 10 } = req.query;
-
-        let query = supabase
-            .from('exercises')
-            .select(`
-                *,
-                chapters (
-                    title,
-                    subject_id,
-                    subjects (
-                        name,
-                        level
-                    )
-                )
-            `)
-            .limit(parseInt(limit));
-
-        if (level) {
-            query = query.eq('chapters.subjects.level', level);
-        }
-
-        if (subject) {
-            query = query.eq('chapters.subjects.name', subject);
-        }
-
-        const { data, error } = await query;
-
-        if (error) throw error;
-
-        res.json(data || []);
-
-    } catch (error) {
-        console.error('Erreur récupération exercices:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-/**
- * Soumettre une réponse d'exercice
- */
-app.post('/api/exercises/submit', authenticateToken, async (req, res) => {
-    try {
-        const { childId, exerciseId, userAnswer, timeSpent } = req.body;
-
-        // Ici, vous devriez implémenter la logique de correction
-        // Pour l'exemple, on simule une correction
-        const isCorrect = Math.random() > 0.5; // Simulation
-        const score = isCorrect ? 20 : 10; // Simulation
-
-        // Enregistrer la session
-        const { data, error } = await supabase
-            .from('exercise_sessions')
-            .insert([{
-                child_id: childId,
-                exercise_id: exerciseId,
-                user_answer: userAnswer,
-                correct: isCorrect,
-                score: score,
-                time_spent: timeSpent
-            }])
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        res.json({
-            success: true,
-            data,
-            correction: {
-                correct: isCorrect,
-                score: score,
-                feedback: isCorrect ? 'Bonne réponse!' : 'Réponse incorrecte'
-            }
-        });
-
-    } catch (error) {
-        console.error('Erreur soumission exercice:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// =================== ROUTES VIDÉOS ===================
-
-/**
- * Récupérer les vidéos
- */
-app.get('/api/videos', async (req, res) => {
-    try {
-        const { level, subject, limit = 10 } = req.query;
-
-        let query = supabase
-            .from('videos')
-            .select(`
-                *,
-                chapters (
-                    title,
-                    subject_id,
-                    subjects (
-                        name,
-                        level
-                    )
-                )
-            `)
-            .limit(parseInt(limit));
-
-        if (level) {
-            query = query.eq('chapters.subjects.level', level);
-        }
-
-        if (subject) {
-            query = query.eq('chapters.subjects.name', subject);
-        }
-
-        const { data, error } = await query;
-
-        if (error) throw error;
-
-        res.json(data || []);
-
-    } catch (error) {
-        console.error('Erreur récupération vidéos:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// =================== ROUTES PAIEMENTS ===================
-
-/**
- * Récupérer les détails d'un paiement
- */
-app.get('/api/payments/:sessionId', async (req, res) => {
-    try {
-        const { sessionId } = req.params;
-
-        const session = await stripe.checkout.sessions.retrieve(sessionId, {
-            expand: ['customer', 'subscription']
-        });
-
-        if (!session) {
-            return res.status(404).json({ error: 'Session non trouvée' });
-        }
-
-        res.json({
-            sessionId: session.id,
-            status: session.payment_status,
-            amount: session.amount_total,
-            currency: session.currency,
-            customerEmail: session.customer_details?.email,
-            plan: session.metadata?.plan,
-            period: session.metadata?.period
-        });
-
-    } catch (error) {
-        console.error('Erreur récupération paiement:', error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// =================== ROUTES PRODUITS STRIPE ===================
-
-/**
- * Récupérer les produits Stripe
+ * Récupérer les produits Stripe (public)
  */
 app.get('/api/stripe/products', async (req, res) => {
     try {
         const products = await stripe.products.list({
             active: true,
-            expand: ['data.default_price']
+            expand: ['data.default_price'],
+            limit: 10
         });
 
         const formattedProducts = products.data.map(product => {
@@ -624,25 +132,305 @@ app.get('/api/stripe/products', async (req, res) => {
     }
 });
 
-// =================== DÉMARRAGE DU SERVEUR ===================
+/**
+ * Créer une session de paiement Stripe (protégé)
+ */
+app.post('/api/subscriptions/create', authenticateToken, async (req, res) => {
+    try {
+        const { plan, period, successUrl, cancelUrl } = req.body;
+        const userId = req.user.id;
 
-app.get('/', (req, res) => {
-    res.json({
-        message: 'API SimosMaths',
-        version: '1.0.0',
-        endpoints: {
-            auth: '/api/auth/*',
-            subscriptions: '/api/subscriptions/*',
-            dashboard: '/api/dashboard/*',
-            exercises: '/api/exercices/*',
-            videos: '/api/videos/*',
-            payments: '/api/payments/*'
+        // Vérifier si l'utilisateur existe
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+        if (profileError || !profile) {
+            return res.status(404).json({ error: 'Profil utilisateur non trouvé' });
         }
+
+        // Récupérer ou créer un client Stripe
+        let stripeCustomerId = profile.stripe_customer_id;
+        
+        if (!stripeCustomerId) {
+            const customer = await stripe.customers.create({
+                email: profile.email,
+                name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
+                metadata: { userId, plan }
+            });
+            stripeCustomerId = customer.id;
+
+            // Mettre à jour le profil
+            await supabase
+                .from('profiles')
+                .update({ stripe_customer_id: customer.id })
+                .eq('id', userId);
+        }
+
+        // IDs de prix (à configurer dans Stripe Dashboard)
+        const priceIds = {
+            decouverte_monthly: process.env.STRIPE_PRICE_DECOUVERTE_MONTHLY,
+            decouverte_yearly: process.env.STRIPE_PRICE_DECOUVERTE_YEARLY,
+            excellence_monthly: process.env.STRIPE_PRICE_EXCELLENCE_MONTHLY,
+            excellence_yearly: process.env.STRIPE_PRICE_EXCELLENCE_YEARLY,
+            famille_monthly: process.env.STRIPE_PRICE_FAMILLE_MONTHLY,
+            famille_yearly: process.env.STRIPE_PRICE_FAMILLE_YEARLY
+        };
+
+        const priceId = priceIds[`${plan}_${period}`];
+        
+        if (!priceId) {
+            return res.status(400).json({ error: `Formule ${plan} (${period}) non disponible` });
+        }
+
+        // Créer la session Stripe
+        const session = await stripe.checkout.sessions.create({
+            customer: stripeCustomerId,
+            payment_method_types: ['card'],
+            line_items: [{
+                price: priceId,
+                quantity: 1,
+            }],
+            mode: 'subscription',
+            allow_promotion_codes: true,
+            subscription_data: {
+                trial_period_days: 7,
+                metadata: { userId, plan, period }
+            },
+            success_url: successUrl || `${req.headers.origin}/payment-success.html?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: cancelUrl || `${req.headers.origin}/tarifs.html`,
+            metadata: { userId, plan, period }
+        });
+
+        res.json({ 
+            sessionId: session.id,
+            url: session.url 
+        });
+
+    } catch (error) {
+        console.error('Erreur création session Stripe:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * Démarrer un essai gratuit (protégé)
+ */
+app.post('/api/trial/start', authenticateToken, async (req, res) => {
+    try {
+        const { plan } = req.body;
+        const userId = req.user.id;
+
+        // Vérifier si déjà en essai ou abonné
+        const { data: existing } = await supabase
+            .from('subscriptions')
+            .select('*')
+            .eq('profile_id', userId)
+            .in('status', ['active', 'trial'])
+            .single();
+
+        if (existing) {
+            return res.status(400).json({ 
+                error: 'Vous avez déjà un abonnement actif ou un essai en cours' 
+            });
+        }
+
+        // Date de fin d'essai (7 jours)
+        const trialEndsAt = new Date();
+        trialEndsAt.setDate(trialEndsAt.getDate() + 7);
+
+        // Créer un abonnement "trial" dans la base
+        const { data: subscription, error: subError } = await supabase
+            .from('subscriptions')
+            .insert([{
+                profile_id: userId,
+                plan: plan,
+                period: 'monthly',
+                status: 'trial',
+                trial_start: new Date().toISOString(),
+                trial_end: trialEndsAt.toISOString(),
+                current_period_end: trialEndsAt.toISOString()
+            }])
+            .select()
+            .single();
+
+        if (subError) throw subError;
+
+        // Mettre à jour le profil
+        await supabase
+            .from('profiles')
+            .update({
+                subscription_tier: plan,
+                subscription_status: 'trial',
+                trial_ends_at: trialEndsAt.toISOString()
+            })
+            .eq('id', userId);
+
+        res.json({
+            success: true,
+            trialEndsAt: trialEndsAt.toISOString(),
+            message: 'Essai gratuit démarré avec succès'
+        });
+
+    } catch (error) {
+        console.error('Erreur démarrage essai:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// =================== ROUTES SIMPLIFIÉES POUR GITHUB ===================
+
+/**
+ * Récupérer les exercices (public avec limitations)
+ */
+app.get('/api/exercises', async (req, res) => {
+    try {
+        const { level, subject, limit = 5 } = req.query;
+
+        let query = supabase
+            .from('exercises')
+            .select(`
+                id, title, question, difficulty, points,
+                chapters!inner (
+                    title,
+                    subjects!inner (name, level)
+                )
+            `)
+            .limit(Math.min(parseInt(limit), 10)); // Limiter à 10 max
+
+        if (level) query = query.eq('chapters.subjects.level', level);
+        if (subject) query = query.eq('chapters.subjects.name', subject);
+
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        // Masquer les solutions pour les utilisateurs non authentifiés
+        const safeData = data.map(exercise => ({
+            ...exercise,
+            solution: undefined // Cacher la solution
+        }));
+
+        res.json(safeData || []);
+
+    } catch (error) {
+        console.error('Erreur récupération exercices:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * Soumettre un exercice (protégé)
+ */
+app.post('/api/exercises/submit', authenticateToken, async (req, res) => {
+    try {
+        const { childId, exerciseId, userAnswer, timeSpent } = req.body;
+
+        // Vérifier que l'enfant appartient à l'utilisateur
+        const { data: child, error: childError } = await supabase
+            .from('children')
+            .select('parent_id')
+            .eq('id', childId)
+            .single();
+
+        if (childError || child.parent_id !== req.user.id) {
+            return res.status(403).json({ error: 'Accès non autorisé à cet enfant' });
+        }
+
+        // Récupérer l'exercice et sa solution
+        const { data: exercise, error: exError } = await supabase
+            .from('exercises')
+            .select('solution, hints')
+            .eq('id', exerciseId)
+            .single();
+
+        if (exError) throw exError;
+
+        // Correction simple (à améliorer)
+        const isCorrect = userAnswer.trim().toLowerCase() === exercise.solution.trim().toLowerCase();
+        const score = isCorrect ? 20 : Math.max(0, 20 - Math.floor(timeSpent / 60)); // Pénalité temps
+
+        // Enregistrer la session
+        const { data: session, error: sessionError } = await supabase
+            .from('exercise_sessions')
+            .insert([{
+                child_id: childId,
+                exercise_id: exerciseId,
+                user_answer: userAnswer,
+                correct: isCorrect,
+                score: score,
+                time_spent: timeSpent
+            }])
+            .select()
+            .single();
+
+        if (sessionError) throw sessionError;
+
+        res.json({
+            success: true,
+            data: session,
+            correction: {
+                correct: isCorrect,
+                score: score,
+                feedback: isCorrect ? 'Bravo ! Réponse correcte.' : 'Réponse incorrecte.',
+                solution: exercise.solution,
+                hints: exercise.hints || []
+            }
+        });
+
+    } catch (error) {
+        console.error('Erreur soumission exercice:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// =================== GESTION DES ERREURS ===================
+
+// 404 - Route non trouvée
+app.use((req, res) => {
+    res.status(404).json({ 
+        error: 'Route non trouvée',
+        path: req.path,
+        method: req.method
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Serveur API démarré sur le port ${PORT}`);
-    console.log(`📊 Supabase: ${SUPABASE_URL}`);
-    console.log(`💳 Stripe: Mode ${process.env.STRIPE_SECRET_KEY?.includes('test') ? 'Test' : 'Production'}`);
+// Gestionnaire d'erreurs global
+app.use((error, req, res, next) => {
+    console.error('Erreur globale:', error);
+    res.status(error.status || 500).json({
+        error: error.message || 'Erreur interne du serveur',
+        ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    });
 });
+
+// =================== DÉMARRAGE ===================
+
+const startServer = async () => {
+    try {
+        // Vérifier la connexion à Supabase
+        const { error: supabaseError } = await supabase.from('profiles').select('count').limit(1);
+        if (supabaseError) {
+            console.error('❌ Connexion Supabase échouée:', supabaseError.message);
+            process.exit(1);
+        }
+
+        // Vérifier la connexion Stripe
+        await stripe.products.list({ limit: 1 });
+        
+        app.listen(PORT, () => {
+            console.log(`🚀 API SimosMaths démarrée sur le port ${PORT}`);
+            console.log(`📊 Supabase: ${SUPABASE_URL ? '✅ Connecté' : '❌ Non configuré'}`);
+            console.log(`💳 Stripe: ${STRIPE_SECRET_KEY ? '✅ Configuré' : '❌ Non configuré'}`);
+            console.log(`🌐 CORS autorisés: ${allowedOrigins.join(', ')}`);
+        });
+        
+    } catch (error) {
+        console.error('❌ Erreur démarrage serveur:', error);
+        process.exit(1);
+    }
+};
+
+startServer();
