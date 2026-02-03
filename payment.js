@@ -181,33 +181,6 @@ class PaymentManager {
     }
 }
 
-    async createStripeSession() {
-        try {
-            // Récupérer le token d'authentification
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            if (!session?.access_token) {
-                throw new Error('Non authentifié');
-            }
-
-            // Définir l'URL de votre API (à adapter)
-            const API_BASE_URL = 'https://simosmath.onrender.com/'; // ⚠️ À CHANGER
-            
-            // Appeler votre API backend
-            const response = await fetch(`${API_BASE_URL}/api/subscriptions/create`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${session.access_token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    plan: this.plan,
-                    period: this.period,
-                    successUrl: `${window.location.origin}/payment-success.html`,
-                    cancelUrl: `${window.location.origin}/tarifs.html`
-                })
-            });
-
             const result = await response.json();
             
             if (!response.ok) {
