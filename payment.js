@@ -227,25 +227,22 @@ class PaymentManager {
         }
     }
 
-    async handleTrialStart() {
-        try {
-            this.showLoading('Démarrage de l\'essai...');
-
-            // Valider le formulaire
-            if (!this.validateForm()) {
-                throw new Error('Veuillez corriger les erreurs du formulaire');
-            }
-
-            // Démarrer l'essai
-            await this.startTrial();
-
-        } catch (error) {
-            console.error('Erreur essai:', error);
-            this.showError('Erreur lors du démarrage de l\'essai: ' + error.message);
-        } finally {
-            this.hideLoading();
+   const result = await startFreeTrial(this.plan, formData);
+        
+        if (result.success) {
+            // Rediriger vers la page de succès
+            window.location.href = 'payment-success.html?trial=true&plan=' + this.plan;
+        } else {
+            throw new Error(result.error || 'Erreur lors du démarrage de l\'essai');
         }
+
+    } catch (error) {
+        console.error('Erreur essai:', error);
+        this.showError('Erreur lors du démarrage de l\'essai: ' + error.message);
+    } finally {
+        this.hideLoading();
     }
+}
 
     async startTrial() {
         try {
