@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimosMaths | Réussite en maths du CP à la Terminale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuration globale -->
+    <script>
+        // Configuration globale accessible partout
+        window.SIMOSMATHS_CONFIG = {
+            SUPABASE_URL: 'https://votre-projet.supabase.co',
+            SUPABASE_ANON_KEY: 'votre_cle_anonyme',
+            STRIPE_PUBLISHABLE_KEY: 'pk_test_votre_cle_publique',
+            API_URL: 'https://api.simosmaths.com'
+        };
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fefefe;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, 
+                rgba(67, 97, 238, 0.08) 0%, 
+                rgba(58, 12, 163, 0.04) 50%, 
+                rgba(76, 201, 240, 0.05) 100%);
+        }
+        
+        .subject-math {
+            background: linear-gradient(135deg, #4361ee15, #4cc9f015);
+        }
+        
+        .subject-french {
+            background: linear-gradient(135deg, #f7258515, #7209b715);
+        }
+        
+        .subject-science {
+            background: linear-gradient(135deg, #4cc9f015, #4895ef15);
+        }
+        
+        .grade-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .primary-badge {
+            background: #4cc9f0;
+            color: white;
+        }
+        
+        .college-badge {
+            background: #4361ee;
+            color: white;
+        }
+        
+        .lycee-badge {
+            background: #3a0ca3;
+            color: white;
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(67, 97, 238, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(67, 97, 238, 0.6); }
+        }
+        
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .scroll-indicator {
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--primary);
+            border-radius: 25px;
+            position: relative;
+        }
+        
+        .scroll-indicator::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 2px;
+            animation: scroll 2s infinite;
+        }
+        
+        @keyframes scroll {
+            0% { top: 8px; opacity: 1; }
+            100% { top: 30px; opacity: 0; }
+        }
+        
+        .level-progress {
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .level-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: var(--gradient);
+            transition: width 1.5s ease;
+        }
+        
+        .program-card {
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .program-card:hover {
+            transform: translateX(10px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Cookie Banner -->
+    <div id="cookieBanner" class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50 p-4 transform translate-y-full transition-transform duration-500">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
+            <div class="mb-4 md:mb-0">
+                <p class="text-gray-700">
+                    <i class="fas fa-cookie-bite text-blue-500 mr-2"></i>
+                    SimosMaths utilise des cookies pour améliorer votre expérience.
+                    <a href="#" class="text-blue-600 hover:underline">En savoir plus</a>
+                </p>
+            </div>
+            <div class="flex space-x-3">
+                <button id="cookieReject" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Personnaliser
+                </button>
+                <button id="cookieAccept" class="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:opacity-90 transition">
+                    <i class="fas fa-check mr-2"></i>Accepter
+                </button> 
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">Σ</span>
+                        </div>
+                        <div>
+                            <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SimosMaths</span>
+                            <div class="text-xs text-gray-500 -mt-1">du CP à la Terminale</div>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#niveaux" class="text-gray-700 hover:text-blue-600 font-medium transition">Niveaux</a>
+                    <a href="methode.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Méthode</a>
+                    <a href="resultats.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Résultats</a>
+                    <a href="tarifs.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Tarifs</a>
+                    <a href="tarifs.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Essai gratuit</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="authButton" class="hidden md:block text-blue-600 hover:text-blue-800 font-medium">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                    </button>
+                    <button id="trialButton" class="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105 pulse-glow">
+                        Essai gratuit 7 jours
+                    </button>
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t">
+            <div class="px-4 py-6 space-y-4">
+                <a href="#niveaux" class="block text-gray-700 hover:text-blue-600 font-medium">Niveaux</a>
+                <a href="methode.html" class="block text-gray-700 hover:text-blue-600 font-medium">Méthode</a>
+                <a href="resultats.html" class="block text-gray-700 hover:text-blue-600 font-medium">Résultats</a>
+                <a href="tarifs.html" class="block text-gray-700 hover:text-blue-600 font-medium">Tarifs</a>
+                <a href="tarifs.html" class="block text-gray-700 hover:text-blue-600 font-medium">Essai gratuit</a>
+                <button id="authButtonMobile" class="w-full text-center text-blue-600 hover:text-blue-800 font-medium py-2">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient pt-16 pb-20 md:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row items-center">
+                <div class="lg:w-1/2 mb-12 lg:mb-0">
+                    <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-medium mb-6">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        <span>Ancien MPSI • Professeur particulier depuis 2 ans</span>
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                        Les maths,
+                        <span class="gradient-text block">enfin faciles</span>
+                        <span class="text-gray-700 text-3xl md:text-4xl block mt-2">du CP à la Terminale</span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl">
+                        Votre enfant peine en maths ? SimosMaths transforme l'apprentissage avec une méthode adaptée à chaque niveau. 
+                        <span class="font-semibold text-blue-600">+2,3 points de moyenne garantis en 3 mois.</span>
+                    </p>
+                    
+                    <!-- Interactive Level Selector -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                        <h3 class="font-bold text-gray-900 mb-4">Sélectionnez le niveau de votre enfant :</h3>
+                        <div class="grid grid-cols-3 gap-3 mb-4">
+                            <button class="level-btn py-3 rounded-lg border-2 border-blue-200 bg-blue-50 text-blue-700 font-medium hover:bg-blue-100 transition" data-level="primaire">
+                                <i class="fas fa-pencil-alt mb-1 block text-xl"></i>
+                                Primaire
+                            </button>
+                            <button class="level-btn py-3 rounded-lg border-2 border-gray-200 bg-gray-50 text-gray-700 font-medium hover:bg-gray-100 transition" data-level="college">
+                                <i class="fas fa-calculator mb-1 block text-xl"></i>
+                                Collège
+                            </button>
+                            <button class="level-btn py-3 rounded-lg border-2 border-gray-200 bg-gray-50 text-gray-700 font-medium hover:bg-gray-100 transition" data-level="lycee">
+                                <i class="fas fa-chart-line mb-1 block text-xl"></i>
+                                Lycée
+                            </button>
+                        </div>
+                        
+                        <div id="levelContent" class="hidden">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 id="selectedLevel" class="font-bold text-lg"></h4>
+                                <span id="selectedGrade" class="text-sm font-medium px-3 py-1 rounded-full"></span>
+                            </div>
+                            <div class="level-progress mb-3">
+                                <div id="levelProgressFill" class="level-progress-fill" style="width: 0%"></div>
+                            </div>
+                            <p id="levelDescription" class="text-gray-600 text-sm"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
+                        <button id="startTrialMain" class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-bold rounded-xl hover:shadow-2xl transition-all hover:scale-105">
+                            <i class="fas fa-play-circle mr-3"></i>Démarrer l'essai gratuit
+                        </button>
+                        <button class="px-8 py-4 bg-white border-2 border-blue-200 text-blue-700 text-lg font-bold rounded-xl hover:bg-blue-50 transition">
+                            <i class="fas fa-video mr-3"></i>Voir une démo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="lg:w-1/2 relative">
+                    <!-- Animated educational elements -->
+                    <div class="absolute top-10 left-10 floating">
+                        <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl rotate-12 flex items-center justify-center shadow-lg">
+                            <span class="text-3xl font-bold text-green-600">+</span>
+                        </div>
+                    </div>
+                    
+                    <div class="absolute bottom-20 right-10 floating" style="animation-delay: 1s;">
+                        <div class="w-20 h-20 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-2xl -rotate-12 flex items-center justify-center shadow-lg">
+                            <span class="text-3xl font-bold text-orange-600">×</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Demo Card -->
+                    <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+                        <div class="p-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+                        <div class="p-6 md:p-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-xl md:text-2xl font-bold text-gray-900">Démonstration interactive</h3>
+                                <div class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                                    <i class="fas fa-circle animate-pulse mr-1"></i> En direct
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <!-- Student Card -->
+                                <div class="flex items-center p-4 bg-blue-50 rounded-xl">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-user-graduate text-white text-xl"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-gray-900">Lucas, 5ème</div>
+                                        <div class="text-sm text-gray-600">Progression en géométrie</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold text-green-600">14/20</div>
+                                        <div class="text-xs text-gray-500">+3 points</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Exercise Demo -->
+                                <div class="bg-gray-50 rounded-xl p-5 font-mono text-gray-800">
+                                    <div class="text-blue-600 font-medium mb-2">Exercice résolu :</div>
+                                    <div class="text-lg">
+                                        Calculer : <span class="font-bold">3 × (4 + 5) - 2²</span>
+                                    </div>
+                                    <div class="mt-3 text-green-600">
+                                        <i class="fas fa-check mr-2"></i>
+                                        <span class="font-medium">Correction étape par étape :</span>
+                                    </div>
+                                    <div class="mt-2 pl-4 text-sm">
+                                        1. Parenthèse : 4 + 5 = 9<br>
+                                        2. Carré : 2² = 4<br>
+                                        3. Multiplication : 3 × 9 = 27<br>
+                                        4. Soustraction : 27 - 4 = <span class="font-bold">23</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Features -->
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="bg-white border border-gray-200 rounded-lg p-3 text-center">
+                                        <i class="fas fa-robot text-blue-500 text-xl mb-2"></i>
+                                        <div class="text-sm font-medium">Correction IA</div>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-3 text-center">
+                                        <i class="fas fa-chalkboard-teacher text-purple-500 text-xl mb-2"></i>
+                                        <div class="text-sm font-medium">Vidéos Simos</div>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-3 text-center">
+                                        <i class="fas fa-gamepad text-green-500 text-xl mb-2"></i>
+                                        <div class="text-sm font-medium">Exercices ludiques</div>
+                                    </div>
+                                    <div class="bg-white border border-gray-200 rounded-lg p-3 text-center">
+                                        <i class="fas fa-chart-bar text-orange-500 text-xl mb-2"></i>
+                                        <div class="text-sm font-medium">Suivi parents</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="mt-6 w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition">
+                                <i class="fas fa-calculator mr-2"></i>Essayer avec un exercice
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Niveaux Section -->
+    <section id="niveaux" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Un programme adapté à chaque niveau</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">De l'apprentissage des bases au perfectionnement pour le bac</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Primaire -->
+                <div class="relative bg-gradient-to-b from-blue-50 to-white rounded-2xl p-8 card-hover">
+                    <div class="grade-badge primary-badge">CP à CM2</div>
+                    <div class="text-center mb-6">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-pencil-alt text-blue-500 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Primaire</h3>
+                        <p class="text-gray-600">Les fondamentaux en s'amusant</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Apprentissage des 4 opérations</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Jeux éducatifs interactifs</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Problèmes de la vie courante</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Suivi des tables de multiplication</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Récompenses et médailles</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold rounded-xl hover:shadow-lg transition">
+                        Découvrir le programme
+                    </button>
+                </div>
+                
+                <!-- Collège -->
+                <div class="relative bg-gradient-to-b from-purple-50 to-white rounded-2xl p-8 card-hover">
+                    <div class="grade-badge college-badge">6ème à 3ème</div>
+                    <div class="text-center mb-6">
+                        <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calculator text-purple-500 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Collège</h3>
+                        <p class="text-gray-600">Maîtriser les concepts clés</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Algèbre et géométrie</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Préparation au brevet</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Théorèmes de Pythagore et Thalès</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Calcul littéral avancé</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Statistiques et probabilités</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:shadow-lg transition">
+                        Découvrir le programme
+                    </button>
+                </div>
+                
+                <!-- Lycée -->
+                <div class="relative bg-gradient-to-b from-indigo-50 to-white rounded-2xl p-8 card-hover">
+                    <div class="grade-badge lycee-badge">2nde à Terminale</div>
+                    <div class="text-center mb-6">
+                        <div class="w-20 h-20 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-chart-line text-indigo-500 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Lycée</h3>
+                        <p class="text-gray-600">L'excellence pour le bac</p>
+                    </div>
+                    
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Fonctions et dérivées</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Suites et limites</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Probabilités conditionnelles</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Géométrie dans l'espace</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Spécialité Maths expertes</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold rounded-xl hover:shadow-lg transition">
+                        Découvrir le programme
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Matières Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Plus que des maths</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Un accompagnement complet dans les matières scientifiques</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Maths -->
+                <div class="subject-math rounded-2xl p-8 card-hover">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-square-root-alt text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Mathématiques</h3>
+                        <p class="text-gray-600">Notre spécialité</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Exercices corrigés</span>
+                            <span class="font-bold text-blue-600">2 487</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Vidéos explicatives</span>
+                            <span class="font-bold text-blue-600">415</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Fiches de révision</span>
+                            <span class="font-bold text-blue-600">128</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Physique-Chimie -->
+                <div class="subject-science rounded-2xl p-8 card-hover">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-atom text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Physique-Chimie</h3>
+                        <p class="text-gray-600">Collège et Lycée</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Expériences virtuelles</span>
+                            <span class="font-bold text-cyan-600">86</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Simulations interactives</span>
+                            <span class="font-bold text-cyan-600">42</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">TP corrigés</span>
+                            <span class="font-bold text-cyan-600">57</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SVT -->
+                <div class="subject-french rounded-2xl p-8 card-hover">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-dna text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">SVT</h3>
+                        <p class="text-gray-600">Sciences de la Vie</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Schémas interactifs</span>
+                            <span class="font-bold text-green-600">74</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Animations 3D</span>
+                            <span class="font-bold text-green-600">33</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">QCM corrigés</span>
+                            <span class="font-bold text-green-600">218</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="tarifs" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Des formules adaptées à chaque besoin</h2>
+                <p class="text-lg text-gray-600">Investissez dans la réussite scolaire de votre enfant</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Formule Découverte -->
+                <div class="bg-white border-2 border-gray-100 rounded-2xl p-8 card-hover">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Découverte</h3>
+                        <div class="flex items-baseline justify-center">
+                            <span class="text-5xl font-bold text-gray-900">7,99€</span>
+                            <span class="text-gray-500 ml-2">/ mois</span>
+                        </div>
+                        <div class="text-gray-500 mt-2">Par enfant</div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>10 exercices corrigés/mois</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Accès aux vidéos de base</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Application mobile</span>
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="fas fa-times mr-3"></i>
+                            <span>Correction détaillée des DM</span>
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="fas fa-times mr-3"></i>
+                            <span>Simulateur d'examen</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 border-2 border-blue-500 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition">
+                        Commencer
+                    </button>
+                </div>
+                
+                <!-- Formule Excellence (Featured) -->
+                <div class="bg-gradient-to-b from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-8 card-hover relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-full font-bold">
+                            La plus populaire
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-8 pt-4">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Excellence</h3>
+                        <div class="flex items-baseline justify-center">
+                            <span class="text-5xl font-bold text-gray-900">14,99€</span>
+                            <span class="text-gray-500 ml-2">/ mois</span>
+                        </div>
+                        <div class="text-gray-500 mt-2">Par enfant</div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span class="font-medium">Exercices illimités</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Correction détaillée des DM</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Simulateur Brevet/Bac</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Vidéos avancées Simos</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Suivi personnalisé</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl hover:shadow-xl transition">
+                        Essai gratuit 7 jours
+                    </button>
+                </div>
+                
+                <!-- Formule Famille -->
+                <div class="bg-white border-2 border-gray-100 rounded-2xl p-8 card-hover">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Famille</h3>
+                        <div class="flex items-baseline justify-center">
+                            <span class="text-5xl font-bold text-gray-900">24,99€</span>
+                            <span class="text-gray-500 ml-2">/ mois</span>
+                        </div>
+                        <div class="text-gray-500 mt-2">Jusqu'à 3 enfants</div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Tous les avantages Excellence</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>3 comptes enfants inclus</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Tableau de bord parent</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Alertes difficultés</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-3"></i>
+                            <span>Rapports détaillés</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 border-2 border-blue-500 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition">
+                        Choisir cette formule
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <p class="text-gray-600 mb-4"><i class="fas fa-shield-alt mr-2"></i>Sans engagement • Résiliable à tout moment • Paiement sécurisé</p>
+                <button id="essai" class="px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-lg font-bold rounded-xl hover:shadow-xl transition">
+                    <i class="fas fa-gift mr-3"></i>Obtenir 7 jours d'essai gratuit
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">Σ</span>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold">SimosMaths</div>
+                            <div class="text-sm opacity-80">du CP à la Terminale</div>
+                        </div>
+                    </div>
+                    <p class="opacity-80 mb-6">
+                        La plateforme d'accompagnement scolaire créée par Simos et Sulyvan, anciens élèves de prépa MPSI.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-tiktok text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-youtube text-xl"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Niveaux</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="#" class="hover:text-blue-300">Primaire (CP-CM2)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Collège (6ème-3ème)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Lycée (2nde-Terminale)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Spécialité Maths</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Ressources</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="#" class="hover:text-blue-300">Exercices gratuits</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Fiches de révision</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Annales corrigées</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Blog pédagogique</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Légal</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="#" class="hover:text-blue-300">Mentions légales</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Conditions d'utilisation</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Politique de confidentialité</a></li>
+                        <li><a href="#" class="hover:text-blue-300">CGV</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center opacity-80">
+                <p>© 2024 SimosMaths. Tous droits réservés. | Conçu avec passion par Simos ANAGNOSTOU et Sulyvan CLARY</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts d'intégration -->
+    <script type="module">
+        // Importer les modules nécessaires
+        import { supabase } from './assets/js/supabase-client.js';
+        
+        // Initialiser l'état d'authentification
+        async function initAuth() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                // Mettre à jour les boutons de connexion
+                updateAuthButtons(user);
+                
+                // Configurer les boutons d'essai gratuit
+                setupTrialButtons(user);
+                
+            } catch (error) {
+                console.error('Erreur initialisation auth:', error);
+            }
+        }
+        
+        // Mettre à jour les boutons d'authentification
+        function updateAuthButtons(user) {
+            const authButton = document.getElementById('authButton');
+            const authButtonMobile = document.getElementById('authButtonMobile');
+            
+            if (user) {
+                // Utilisateur connecté
+                if (authButton) {
+                    authButton.innerHTML = '<i class="fas fa-user mr-2"></i>Mon compte';
+                    authButton.onclick = () => window.location.href = 'dashboard.html';
+                }
+                if (authButtonMobile) {
+                    authButtonMobile.innerHTML = '<i class="fas fa-user mr-2"></i>Mon compte';
+                    authButtonMobile.onclick = () => window.location.href = 'dashboard.html';
+                }
+            } else {
+                // Utilisateur non connecté
+                if (authButton) {
+                    authButton.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Connexion';
+                    authButton.onclick = () => window.location.href = 'auth.html';
+                }
+                if (authButtonMobile) {
+                    authButtonMobile.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Connexion';
+                    authButtonMobile.onclick = () => window.location.href = 'auth.html';
+                }
+            }
+        }
+        
+        // Configurer les boutons d'essai gratuit
+        function setupTrialButtons(user) {
+            const trialButton = document.getElementById('trialButton');
+            const startTrialMain = document.getElementById('startTrialMain');
+            const essaiButton = document.getElementById('essai');
+            
+            const handleTrialClick = async (e) => {
+                e.preventDefault();
+                
+                if (user) {
+                    // Vérifier si l'utilisateur a déjà un abonnement
+                    const { data: subscription } = await supabase
+                        .from('subscriptions')
+                        .select('*')
+                        .eq('profile_id', user.id)
+                        .in('status', ['active', 'trial'])
+                        .single();
+                    
+                    if (subscription) {
+                        // Déjà abonné, rediriger vers le dashboard
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        // Rediriger vers la page des tarifs pour choisir une formule
+                        window.location.href = 'tarifs.html';
+                    }
+                } else {
+                    // Rediriger vers l'authentification
+                    localStorage.setItem('redirectAfterAuth', 'tarifs.html');
+                    window.location.href = 'auth.html?redirect=tarifs';
+                }
+            };
+            
+            // Attacher les événements
+            if (trialButton) trialButton.addEventListener('click', handleTrialClick);
+            if (startTrialMain) startTrialMain.addEventListener('click', handleTrialClick);
+            if (essaiButton) essaiButton.addEventListener('click', handleTrialClick);
+        }
+        
+        // Gestion des cookies
+        function initCookies() {
+            setTimeout(() => {
+                const cookieBanner = document.getElementById('cookieBanner');
+                if (cookieBanner) {
+                    cookieBanner.classList.remove('translate-y-full');
+                }
+            }, 1000);
+            
+            document.getElementById('cookieAccept')?.addEventListener('click', function() {
+                document.getElementById('cookieBanner').classList.add('translate-y-full');
+                localStorage.setItem('simosmaths_cookies', 'accepted');
+            });
+            
+            document.getElementById('cookieReject')?.addEventListener('click', function() {
+                document.getElementById('cookieBanner').classList.add('translate-y-full');
+                localStorage.setItem('simosmaths_cookies', 'rejected');
+            });
+        }
+        
+        // Gestion du menu mobile
+        function initMobileMenu() {
+            document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
+                const menu = document.getElementById('mobileMenu');
+                menu.classList.toggle('hidden');
+            });
+        }
+        
+        // Sélecteur de niveau interactif
+        function initLevelSelector() {
+            const levelButtons = document.querySelectorAll('.level-btn');
+            const levelContent = document.getElementById('levelContent');
+            const selectedLevel = document.getElementById('selectedLevel');
+            const selectedGrade = document.getElementById('selectedGrade');
+            const levelDescription = document.getElementById('levelDescription');
+            const levelProgressFill = document.getElementById('levelProgressFill');
+            
+            const levelData = {
+                primaire: {
+                    title: "Primaire (CP à CM2)",
+                    badge: "CP à CM2",
+                    badgeClass: "primary-badge",
+                    description: "Apprentissage des bases mathématiques à travers des jeux éducatifs et des exercices ludiques adaptés aux jeunes élèves.",
+                    progress: 35
+                },
+                college: {
+                    title: "Collège (6ème à 3ème)",
+                    badge: "6ème à 3ème",
+                    badgeClass: "college-badge",
+                    description: "Maîtrise des concepts clés du programme collège avec préparation au Brevet et renforcement des fondamentaux.",
+                    progress: 65
+                },
+                lycee: {
+                    title: "Lycée (2nde à Terminale)",
+                    badge: "2nde à Terminale",
+                    badgeClass: "lycee-badge",
+                    description: "Approfondissement des notions pour le Baccalauréat, spécialité maths et préparation aux études supérieures.",
+                    progress: 85
+                }
+            };
+            
+            levelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Reset all buttons
+                    levelButtons.forEach(btn => {
+                        btn.classList.remove('border-blue-500', 'bg-blue-100', 'text-blue-700');
+                        btn.classList.add('border-gray-200', 'bg-gray-50', 'text-gray-700');
+                    });
+                    
+                    // Style active button
+                    this.classList.remove('border-gray-200', 'bg-gray-50', 'text-gray-700');
+                    this.classList.add('border-blue-500', 'bg-blue-100', 'text-blue-700');
+                    
+                    // Get level data
+                    const level = this.dataset.level;
+                    const data = levelData[level];
+                    
+                    // Update display
+                    selectedLevel.textContent = data.title;
+                    selectedGrade.textContent = data.badge;
+                    selectedGrade.className = `text-sm font-medium px-3 py-1 rounded-full ${data.badgeClass}`;
+                    levelDescription.textContent = data.description;
+                    
+                    // Animate progress bar
+                    levelProgressFill.style.width = '0%';
+                    setTimeout(() => {
+                        levelProgressFill.style.width = data.progress + '%';
+                    }, 100);
+                    
+                    // Show content
+                    levelContent.classList.remove('hidden');
+                    levelContent.classList.add('stagger-item');
+                    
+                    // Scroll to level section
+                    document.getElementById('niveaux').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+            
+            // Initialize with primaire selected
+            if (levelButtons[0]) levelButtons[0].click();
+        }
+        
+        // Smooth scroll
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                    
+                    // Close mobile menu if open
+                    document.getElementById('mobileMenu')?.classList.add('hidden');
+                });
+            });
+        }
+        
+        // Animation au scroll
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('stagger-item');
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.card-hover, .program-card').forEach(el => {
+                observer.observe(el);
+            });
+        }
+        
+        // Initialisation au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            initAuth();
+            initCookies();
+            initMobileMenu();
+            initLevelSelector();
+            initSmoothScroll();
+            initScrollAnimations();
+        });
+        
+        // Écouter les changements d'authentification
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                initAuth();
+            }
+        });
+    </script>
+</body>
+</html>

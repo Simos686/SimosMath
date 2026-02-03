@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - SimosMaths</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="text-center">
+        <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full spinner mx-auto mb-6"></div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Connexion en cours...</h1>
+        <p class="text-gray-600 mb-6">Veuillez patienter pendant que nous vous connectons.</p>
+        
+        <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <p id="error-text"></p>
+        </div>
+        
+        <div class="text-sm text-gray-500">
+            Si la redirection ne fonctionne pas, 
+            <a href="/dashboard.html" class="text-blue-600 hover:underline">cliquez ici</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabase-client.js';
+
+        async function handleAuthCallback() {
+            try {
+                // Récupérer le hash de l'URL
+                const hash = window.location.hash;
+                
+                if (!hash) {
+                    throw new Error('Aucune information d\'authentification trouvée');
+                }
+
+                // Traiter le retour d'authentification
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    throw error;
+                }
+
+                if (data.session) {
+                    // Connexion réussie, rediriger vers le dashboard
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1500);
+                } else {
+                    throw new Error('Session non valide');
+                }
+
+            } catch (error) {
+                console.error('Erreur callback:', error);
+                
+                // Afficher le message d'erreur
+                document.getElementById('error-text').textContent = 
+                    'Erreur de connexion: ' + error.message;
+                document.getElementById('error-message').classList.remove('hidden');
+                
+                // Rediriger vers la page de connexion après 5 secondes
+                setTimeout(() => {
+                    window.location.href = '/auth.html';
+                }, 5000);
+            }
+        }
+
+        // Exécuter lors du chargement de la page
+        document.addEventListener('DOMContentLoaded', handleAuthCallback);
+    </script>
+</body>
+</html>

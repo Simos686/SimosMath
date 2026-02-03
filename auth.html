@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion | SimosMaths</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, 
+                rgba(67, 97, 238, 0.08) 0%, 
+                rgba(58, 12, 163, 0.04) 50%, 
+                rgba(76, 201, 240, 0.05) 100%);
+            min-height: 100vh;
+        }
+        
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .auth-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        
+        .form-input {
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .social-btn {
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            border-color: #4361ee;
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: #4361ee;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <a href="index.html" class="inline-flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span class="text-white font-bold text-xl">Σ</span>
+                </div>
+                <div class="text-left">
+                    <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SimosMaths</div>
+                    <div class="text-sm text-gray-500 -mt-1">du CP à la Terminale</div>
+                </div>
+            </a>
+        </div>
+        
+        <!-- Carte d'authentification -->
+        <div class="auth-card p-8">
+            <!-- Tabs -->
+            <div class="flex space-x-8 mb-8">
+                <button id="loginTab" class="tab-btn text-lg font-bold text-gray-700 active">
+                    Connexion
+                </button>
+                <button id="registerTab" class="tab-btn text-lg font-bold text-gray-700">
+                    Inscription
+                </button>
+            </div>
+            
+            <!-- Formulaires -->
+            <div id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="loginEmail" class="form-input w-full p-3" placeholder="votre@email.com">
+                </div>
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <label class="block text-sm font-medium text-gray-700">Mot de passe</label>
+                        <a href="#" class="text-sm text-blue-600 hover:underline">Mot de passe oublié ?</a>
+                    </div>
+                    <input type="password" id="loginPassword" class="form-input w-full p-3" placeholder="Votre mot de passe">
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="rememberMe" class="rounded text-blue-600 mr-3">
+                    <label for="rememberMe" class="text-sm text-gray-600">Se souvenir de moi</label>
+                </div>
+                
+                <button id="loginButton" class="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                    Se connecter
+                </button>
+                
+                <div class="relative text-center my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div class="relative inline-flex justify-center bg-white px-4 text-sm text-gray-500">
+                        Ou continuer avec
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="social-btn p-3 flex items-center justify-center">
+                        <i class="fab fa-google text-red-500 text-xl mr-2"></i>
+                        <span class="font-medium">Google</span>
+                    </button>
+                    <button class="social-btn p-3 flex items-center justify-center">
+                        <i class="fab fa-microsoft text-blue-500 text-xl mr-2"></i>
+                        <span class="font-medium">Microsoft</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="registerForm" class="space-y-6 hidden">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                        <input type="text" id="registerFirstName" class="form-input w-full p-3" placeholder="Jean">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                        <input type="text" id="registerLastName" class="form-input w-full p-3" placeholder="Dupont">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="registerEmail" class="form-input w-full p-3" placeholder="votre@email.com">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                    <input type="password" id="registerPassword" class="form-input w-full p-3" placeholder="Minimum 8 caractères">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirmer le mot de passe</label>
+                    <input type="password" id="registerConfirmPassword" class="form-input w-full p-3" placeholder="Retapez votre mot de passe">
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="acceptTerms" class="rounded text-blue-600 mr-3">
+                    <label for="acceptTerms" class="text-sm text-gray-600">
+                        J'accepte les <a href="#" class="text-blue-600 hover:underline">conditions générales</a>
+                    </label>
+                </div>
+                
+                <button id="registerButton" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                    Créer mon compte
+                </button>
+                
+                <p class="text-center text-sm text-gray-500">
+                    En créant un compte, vous pouvez bénéficier de 7 jours d'essai gratuit
+                </p>
+            </div>
+        </div>
+        
+        <!-- Lien retour -->
+        <div class="text-center mt-6">
+            <a href="index.html" class="text-blue-600 hover:underline font-medium">
+                <i class="fas fa-arrow-left mr-2"></i>Retour à l'accueil
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion des tabs
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            loginTab.addEventListener('click', function() {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            });
+            
+            registerTab.addEventListener('click', function() {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            });
+            
+            // Gestion de la connexion
+            document.getElementById('loginButton').addEventListener('click', async function() {
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                if (!email || !password) {
+                    alert('Veuillez remplir tous les champs');
+                    return;
+                }
+                
+                // Ici, vous intégrerez Supabase Auth
+                try {
+                    // Exemple avec Supabase (à adapter avec vos clés)
+                    /*
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) throw error;
+                    
+                    // Redirection vers le dashboard
+                    window.location.href = 'dashboard.html';
+                    */
+                    
+                    // Pour l'instant, simulation
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Connexion...';
+                    setTimeout(() => {
+                        alert('Connexion simulée - Redirection vers le dashboard');
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                    
+                } catch (error) {
+                    alert('Erreur de connexion: ' + error.message);
+                }
+            });
+            
+            // Gestion de l'inscription
+            document.getElementById('registerButton').addEventListener('click', async function() {
+                const firstName = document.getElementById('registerFirstName').value;
+                const lastName = document.getElementById('registerLastName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                const acceptTerms = document.getElementById('acceptTerms').checked;
+                
+                if (!firstName || !lastName || !email || !password || !confirmPassword) {
+                    alert('Veuillez remplir tous les champs');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    alert('Les mots de passe ne correspondent pas');
+                    return;
+                }
+                
+                if (password.length < 8) {
+                    alert('Le mot de passe doit contenir au moins 8 caractères');
+                    return;
+                }
+                
+                if (!acceptTerms) {
+                    alert('Veuillez accepter les conditions générales');
+                    return;
+                }
+                
+                // Ici, vous intégrerez Supabase Auth
+                try {
+                    // Exemple avec Supabase (à adapter avec vos clés)
+                    /*
+                    const { data, error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: {
+                                first_name: firstName,
+                                last_name: lastName
+                            }
+                        }
+                    });
+                    
+                    if (error) throw error;
+                    
+                    // Redirection vers la page de vérification
+                    window.location.href = 'verify.html';
+                    */
+                    
+                    // Pour l'instant, simulation
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Création du compte...';
+                    setTimeout(() => {
+                        // Vérifier s'il y a un essai gratuit dans l'URL
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const trial = urlParams.get('trial');
+                        const plan = urlParams.get('plan');
+                        
+                        if (trial === 'true') {
+                            // Rediriger vers la page de paiement pour l'essai
+                            window.location.href = `payment.html?plan=${plan}&trial=true`;
+                        } else {
+                            alert('Compte créé avec succès ! Veuillez vérifier votre email.');
+                            window.location.href = 'index.html';
+                        }
+                    }, 1000);
+                    
+                } catch (error) {
+                    alert('Erreur lors de la création du compte: ' + error.message);
+                }
+            });
+        });
+<script type="module" src="./assets/js/auth.js"></script>
+
+<!-- Ajouter ce style pour les animations -->
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-10px); }
+    }
+    
+    .animate-fadeIn {
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    .animate-fadeOut {
+        animation: fadeOut 0.3s ease-out;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+</style>
+    </script>
+</body>
+
+</html>

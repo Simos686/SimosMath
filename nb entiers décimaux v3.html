@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimosMaths 6ème | Nombres entiers et décimaux - Programme complet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fefefe;
+            line-height: 1.6;
+        }
+        
+        .chapter-gradient {
+            background: linear-gradient(135deg, 
+                rgba(67, 97, 238, 0.08) 0%, 
+                rgba(58, 12, 163, 0.04) 50%, 
+                rgba(76, 201, 240, 0.05) 100%);
+        }
+        
+        .subject-math {
+            background: linear-gradient(135deg, #4361ee15, #4cc9f015);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .math-symbol {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: bold;
+            background-color: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #1e40af;
+        }
+        
+        .important-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .example-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        
+        .exercise-box {
+            background-color: #f0f9ff;
+            border: 2px dashed #0ea5e9;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .visual-number {
+            display: inline-flex;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            background-color: #f8fafc;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin: 4px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .digit-place {
+            display: inline-block;
+            text-align: center;
+            min-width: 50px;
+            padding: 8px 4px;
+            margin: 0 2px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .place-value {
+            text-align: center;
+            padding: 8px;
+            min-width: 80px;
+            border-bottom: 3px solid;
+            margin: 0 2px;
+            font-weight: bold;
+        }
+        
+        .number-line {
+            position: relative;
+            height: 60px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .tick-mark {
+            position: absolute;
+            bottom: 0;
+            width: 2px;
+            height: 20px;
+            background-color: #64748b;
+        }
+        
+        .tick-number {
+            position: absolute;
+            top: 25px;
+            left: -10px;
+            width: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+        
+        .point-on-line {
+            position: absolute;
+            bottom: 10px;
+            width: 16px;
+            height: 16px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .point-label {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: #1e40af;
+        }
+        
+        .step-by-step {
+            counter-reset: step-counter;
+            padding-left: 0;
+        }
+        
+        .step-by-step li {
+            counter-increment: step-counter;
+            list-style-type: none;
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 20px;
+        }
+        
+        .step-by-step li:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .skill-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+        
+        .skill-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .calculator-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            background-color: #1e293b;
+            color: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: right;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <a href="index.html">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">Σ</span>
+                        </div>
+                    </a>
+                    <div>
+                        <a href="index.html">
+                            <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SimosMaths</span>
+                        </a>
+                        <div class="text-xs text-gray-500 -mt-1">Programme de 6ème</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="#programme" class="text-blue-600 hover:text-blue-800 font-medium">
+                        <i class="fas fa-list-ol mr-1"></i>Points du programme
+                    </a>
+                    <button class="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
+                        <i class="fas fa-play-circle mr-2"></i>Voir la vidéo Simos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="chapter-gradient pt-10 pb-6">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-medium mb-4">
+                    <i class="fas fa-graduation-cap mr-2"></i>
+                    <span>Programme officiel de 6ème - Mathématiques</span>
+                </div>
+                
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-4">
+                    Chapitre complet : 
+                    <span class="gradient-text">Nombres entiers et décimaux</span>
+                </h1>
+                
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Tout ce que tu dois savoir pour maîtriser les nombres entiers et décimaux en 6ème, avec des explications simples, des exemples concrets et des exercices pour t'entraîner.
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-bullseye text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-500">Compétences visées</div>
+                        <div class="font-bold text-gray-800">23 points du programme</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-lightbulb text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-500">Niveau</div>
+                        <div class="font-bold text-gray-800">6ème - 11-12 ans</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-200 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-puzzle-piece text-orange-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-500">Exercices</div>
+                        <div class="font-bold text-gray-800">12 exercices interactifs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Points du programme -->
+    <section id="programme" class="py-12 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-list-check text-blue-500 mr-3"></i>
+                    Tous les points du programme
+                </h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Voici les 23 compétences que tu vas apprendre dans ce chapitre. Clique sur une compétence pour voir l'explication détaillée.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+                <!-- Compétences 1 à 23 -->
+                <a href="#c1" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #3b82f6;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">1</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Valeur des chiffres selon leur rang</h3>
+                            <p class="text-sm text-gray-600">Comprendre que le chiffre 5 peut valoir 5, 50 ou 500 selon sa position</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c2" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #8b5cf6;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">2</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Unités de numération</h3>
+                            <p class="text-sm text-gray-600">Unités, dizaines, centaines, milliers, dixièmes, centièmes, millièmes</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c3" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #10b981;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">3</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Les grands nombres entiers</h3>
+                            <p class="text-sm text-gray-600">Lire et écrire des nombres comme 25 000 ou 3 450 000</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c4" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #f59e0b;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">4</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Reconnaître un nombre décimal</h3>
+                            <p class="text-sm text-gray-600">Savoir qu'un nombre décimal a une virgule</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c5" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #ef4444;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-red-100 text-red-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">5</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Définition d'un pourcentage</h3>
+                            <p class="text-sm text-gray-600">Comprendre que 25% = 25/100 = 0,25</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c6" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #06b6d4;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-cyan-100 text-cyan-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">6</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Différentes écritures d'un nombre</h3>
+                            <p class="text-sm text-gray-600">Virgule, fraction, nombre mixte, pourcentage</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c7" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #8b5cf6;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">7-8</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Demi-droite graduée</h3>
+                            <p class="text-sm text-gray-600">Placer et repérer un nombre décimal sur une droite</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c9" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #10b981;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">9-10</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Comparer et ordonner</h3>
+                            <p class="text-sm text-gray-600">Utiliser <, >, = et ranger par ordre croissant/décroissant</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c11" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #f59e0b;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">11-12</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Valeurs arrondies</h3>
+                            <p class="text-sm text-gray-600">Arrondir à l'unité, au dixième, au centième</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c13" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #ef4444;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-red-100 text-red-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">13</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Encadrer et intercaler</h3>
+                            <p class="text-sm text-gray-600">Trouver un nombre entre deux autres</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c14" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #3b82f6;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">14</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Addition et soustraction</h3>
+                            <p class="text-sm text-gray-600">Avec des nombres décimaux</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c15" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #8b5cf6;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">15-16</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Multiplier par 0,1 ; 0,01 ; 0,001</h3>
+                            <p class="text-sm text-gray-600">Lien avec division par 10, 100, 1000</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c17" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #10b981;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">17-19</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Multiplier des décimaux</h3>
+                            <p class="text-sm text-gray-600">Comprendre et calculer le produit de deux décimaux</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c20" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #f59e0b;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">20-21</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Diviser un décimal par un entier</h3>
+                            <p class="text-sm text-gray-600">Diviser par un nombre entier inférieur à 10</p>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="#c22" class="skill-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md card-hover" style="border-left-color: #ef4444;">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-red-100 text-red-700 flex items-center justify-center mr-3 flex-shrink-0">
+                            <span class="font-bold">22-23</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-900 mb-2">Division euclidienne</h3>
+                            <p class="text-sm text-gray-600">Effectuer et utiliser la division euclidienne</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explications détaillées -->
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    <i class="fas fa-graduation-cap text-blue-500 mr-3"></i>
+                    Explications détaillées
+                </h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Voici toutes les explications dont tu as besoin, avec des exemples concrets et des méthodes simples.
+                </p>
+            </div>
+            
+            <!-- Compétence 1 -->
+            <div id="c1" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">1</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Valeur des chiffres selon leur rang</h2>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-lightbulb text-blue-500 mr-2"></i> <strong>Leçon clé :</strong> Dans un nombre, la valeur d'un chiffre dépend de sa position !</p>
+                </div>
+                
+                <p class="text-gray-700 mb-4">
+                    Prenons le nombre <span class="math-symbol">5 237</span> :
+                </p>
+                
+                <div class="flex flex-wrap justify-center mb-6">
+                    <div class="digit-place bg-blue-100 text-blue-800 border-blue-300">
+                        <div>5</div>
+                        <div class="text-xs">milliers</div>
+                        <div class="text-xs">= 5 000</div>
+                    </div>
+                    <div class="digit-place bg-blue-200 text-blue-800 border-blue-400">
+                        <div>2</div>
+                        <div class="text-xs">centaines</div>
+                        <div class="text-xs">= 200</div>
+                    </div>
+                    <div class="digit-place bg-blue-300 text-blue-800 border-blue-500">
+                        <div>3</div>
+                        <div class="text-xs">dizaines</div>
+                        <div class="text-xs">= 30</div>
+                    </div>
+                    <div class="digit-place bg-blue-400 text-blue-800 border-blue-600">
+                        <div>7</div>
+                        <div class="text-xs">unités</div>
+                        <div class="text-xs">= 7</div>
+                    </div>
+                </div>
+                
+                <p class="text-gray-700 mb-4">
+                    Le chiffre 5 ne vaut pas "5" mais <strong>"5 milliers"</strong>, c'est-à-dire 5 000.
+                    Le chiffre 2 vaut "2 centaines", c'est-à-dire 200.
+                </p>
+                
+                <div class="example-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-pencil-alt text-green-500 mr-2"></i>Exemple :</h4>
+                    <p>Dans le nombre <span class="math-symbol">34 562</span> :</p>
+                    <ul class="list-disc pl-5 mt-2 text-gray-700">
+                        <li>Le chiffre 3 vaut <span class="math-symbol">30 000</span> (3 dizaines de milliers)</li>
+                        <li>Le chiffre 4 vaut <span class="math-symbol">4 000</span> (4 milliers)</li>
+                        <li>Le chiffre 5 vaut <span class="math-symbol">500</span> (5 centaines)</li>
+                        <li>Le chiffre 6 vaut <span class="math-symbol">60</span> (6 dizaines)</li>
+                        <li>Le chiffre 2 vaut <span class="math-symbol">2</span> (2 unités)</li>
+                    </ul>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-dumbbell text-orange-500 mr-2"></i>Petit exercice :</h4>
+                    <p class="mb-3">Dans le nombre <span class="math-symbol">72 846</span>, que vaut le chiffre 8 ?</p>
+                    <div class="flex space-x-4">
+                        <button class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">8</button>
+                        <button class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">80</button>
+                        <button class="px-4 py-2 bg-blue-100 rounded-lg hover:bg-blue-200 font-bold">800</button>
+                        <button class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">8 000</button>
+                    </div>
+                    <p class="mt-3 text-sm text-gray-600"><i class="fas fa-check-circle text-green-500 mr-1"></i> Bravo si tu as choisi 800 ! Le 8 est à la position des centaines.</p>
+                </div>
+            </div>
+            
+            <!-- Compétence 2 -->
+            <div id="c2" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">2</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Unités de numération</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Les nombres sont organisés en unités de numération. Voici comment elles fonctionnent :
+                </p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-7 gap-3 mb-8">
+                    <div class="bg-gradient-to-b from-blue-50 to-blue-100 p-3 rounded-lg text-center">
+                        <div class="font-bold text-blue-800">Milliers</div>
+                        <div class="text-sm">1 000</div>
+                    </div>
+                    <div class="bg-gradient-to-b from-blue-100 to-blue-200 p-3 rounded-lg text-center">
+                        <div class="font-bold text-blue-800">Centaines</div>
+                        <div class="text-sm">100</div>
+                    </div>
+                    <div class="bg-gradient-to-b from-blue-200 to-blue-300 p-3 rounded-lg text-center">
+                        <div class="font-bold text-blue-800">Dizaines</div>
+                        <div class="text-sm">10</div>
+                    </div>
+                    <div class="bg-gradient-to-b from-blue-300 to-blue-400 p-3 rounded-lg text-center">
+                        <div class="font-bold text-blue-800">Unités</div>
+                        <div class="text-sm">1</div>
+                    </div>
+                    <div class="bg-gradient-to-b from-purple-100 to-purple-200 p-3 rounded-lg text-center">
+                        <div class="font-bold text-purple-800">Dixièmes</div>
+                        <div class="text-sm">0,1 = 1/10</div>
+                    </div>
+                    <div class="bg-gradient-to-b from-purple-200 to-purple-300 p-3 rounded-lg text-center">
+                        <div class="font-bold text-purple-800">Centièmes</div>
+                        <div class="text-sm">0,01 = 1/100</div>
+                    </div>
+                    <div class="bg-gradient-to-b from-purple-300 to-purple-400 p-3 rounded-lg text-center">
+                        <div class="font-bold text-purple-800">Millièmes</div>
+                        <div class="text-sm">0,001 = 1/1000</div>
+                    </div>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-exchange-alt text-purple-500 mr-2"></i> <strong>Les liens entre unités :</strong></p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>1 millier = 10 centaines = 100 dizaines = 1 000 unités</li>
+                        <li>1 unité = 10 dixièmes = 100 centièmes = 1 000 millièmes</li>
+                        <li>1 dixième = 0,1 = 1/10</li>
+                        <li>1 centième = 0,01 = 1/100</li>
+                        <li>1 millième = 0,001 = 1/1000</li>
+                    </ul>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-pencil-alt text-green-500 mr-2"></i>Exemples concrets :</h4>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        <li>Une tablette de chocolat partagée en 10 : chaque part = 1 dixième = 0,1</li>
+                        <li>Un euro partagé en 100 centimes : 1 centime = 1 centième = 0,01 €</li>
+                        <li>Un mètre partagé en 1000 millimètres : 1 mm = 1 millième = 0,001 m</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Compétence 3 -->
+            <div id="c3" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-green-100 text-green-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">3</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Les grands nombres entiers</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Les grands nombres entiers s'écrivent avec des espaces entre les milliers pour faciliter la lecture.
+                </p>
+                
+                <div class="flex flex-col items-center mb-8">
+                    <div class="visual-number mb-2">
+                        <span class="text-blue-700">2</span>
+                        <span class="text-blue-600">5</span>
+                        <span class="text-gray-400 mx-2"> </span>
+                        <span class="text-blue-500">0</span>
+                        <span class="text-blue-400">0</span>
+                        <span class="text-blue-300">0</span>
+                    </div>
+                    <div class="text-gray-700">se lit : "vingt-cinq mille"</div>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-lightbulb text-green-500 mr-2"></i> <strong>Règle :</strong> On met un espace entre les milliers, les millions, les milliards...</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-2">Exemples :</h4>
+                        <ul class="list-disc pl-5 text-gray-700">
+                            <li>1 250 = "mille deux cent cinquante"</li>
+                            <li>34 567 = "trente-quatre mille cinq cent soixante-sept"</li>
+                            <li>2 450 000 = "deux millions quatre cent cinquante mille"</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-2">Astuce pour lire :</h4>
+                        <p class="text-gray-700">Lis par groupes de 3 chiffres :</p>
+                        <div class="mt-2">
+                            <div class="visual-number">1<span class="text-gray-400 mx-1"> </span>234<span class="text-gray-400 mx-1"> </span>567</div>
+                            <p class="text-sm text-gray-600">→ 1 million 234 mille 567</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-microphone text-orange-500 mr-2"></i>À toi de lire :</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="visual-number">12 345</div>
+                            <p class="text-sm text-gray-600 mt-1">douze mille trois cent quarante-cinq</p>
+                        </div>
+                        <div>
+                            <div class="visual-number">203 009</div>
+                            <p class="text-sm text-gray-600 mt-1">deux cent trois mille neuf</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 4 -->
+            <div id="c4" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">4</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Reconnaître un nombre décimal</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Un nombre décimal est un nombre qui peut s'écrire avec une virgule. Il a deux parties :
+                </p>
+                
+                <div class="flex justify-center items-center mb-6">
+                    <div class="place-value border-blue-500">
+                        <div class="text-blue-700">Partie entière</div>
+                        <div class="text-2xl text-blue-700">15</div>
+                    </div>
+                    <div class="text-3xl mx-4">,</div>
+                    <div class="place-value border-purple-500">
+                        <div class="text-purple-700">Partie décimale</div>
+                        <div class="text-2xl text-purple-700">75</div>
+                    </div>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-check-circle text-yellow-500 mr-2"></i> <strong>Tout nombre entier est aussi un nombre décimal !</strong></p>
+                    <p class="mt-2">Exemple : 8 = 8,0 = 8,00 = 8,000</p>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-question-circle text-orange-500 mr-2"></i>Quels sont des nombres décimaux ?</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                        <div class="text-center p-3 bg-green-100 rounded-lg">
+                            <div class="font-bold">3,14</div>
+                            <div class="text-sm">✓ Décimal</div>
+                        </div>
+                        <div class="text-center p-3 bg-green-100 rounded-lg">
+                            <div class="font-bold">42</div>
+                            <div class="text-sm">✓ Décimal (42,0)</div>
+                        </div>
+                        <div class="text-center p-3 bg-red-100 rounded-lg">
+                            <div class="font-bold">1/3</div>
+                            <div class="text-sm">✗ Pas décimal</div>
+                        </div>
+                        <div class="text-center p-3 bg-green-100 rounded-lg">
+                            <div class="font-bold">7,5</div>
+                            <div class="text-sm">✓ Décimal</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600">1/3 n'est pas décimal car 1÷3 = 0,3333... ça ne s'arrête jamais !</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-pencil-alt text-green-500 mr-2"></i>Exemples :</h4>
+                    <ul class="list-disc pl-5 text-gray-700">
+                        <li>Le prix d'un livre : 12,50 € → décimal</li>
+                        <li>La taille d'une personne : 1,65 m → décimal</li>
+                        <li>La température : 23,5°C → décimal</li>
+                        <li>Le nombre d'élèves dans une classe : 28 → aussi décimal (28,0)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Compétence 5 -->
+            <div id="c5" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-red-100 text-red-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">5</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Définition d'un pourcentage</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Un pourcentage, c'est une fraction sur 100. Le symbole % signifie "sur 100".
+                </p>
+                
+                <div class="flex flex-col items-center mb-6">
+                    <div class="text-4xl font-bold text-red-600 mb-2">25%</div>
+                    <div class="text-2xl mb-1">=</div>
+                    <div class="text-2xl mb-1">25/100</div>
+                    <div class="text-2xl mb-1">=</div>
+                    <div class="text-2xl">0,25</div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Exemples concrets :</h4>
+                        <ul class="list-disc pl-5 text-gray-700">
+                            <li>50% d'une pizza = la moitié (50/100 = 1/2)</li>
+                            <li>25% de réduction = on paye 75% du prix</li>
+                            <li>100% = tout (100/100 = 1)</li>
+                            <li>0% = rien (0/100 = 0)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Conversions :</h4>
+                        <div class="space-y-2">
+                            <div>10% = <span class="math-symbol">10/100 = 0,10</span></div>
+                            <div>75% = <span class="math-symbol">75/100 = 0,75</span></div>
+                            <div>5% = <span class="math-symbol">5/100 = 0,05</span></div>
+                            <div>100% = <span class="math-symbol">100/100 = 1</span></div>
+                            <div>0,3 = <span class="math-symbol">0,30 = 30%</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-calculator text-red-500 mr-2"></i> <strong>Méthode pour calculer un pourcentage :</strong></p>
+                    <p class="mt-2">Pour trouver 20% de 80€ :</p>
+                    <ol class="list-decimal pl-5 mt-2">
+                        <li>20% = 20/100 = 0,20</li>
+                        <li>0,20 × 80 = 16</li>
+                        <li>Donc 20% de 80€ = 16€</li>
+                    </ol>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-shopping-cart text-orange-500 mr-2"></i>Exercice :</h4>
+                    <p>Un jeu vidéo coûte 50€. Il a 30% de réduction. Combien coûte-t-il après réduction ?</p>
+                    <div class="mt-3">
+                        <p>30% de 50€ = 0,30 × 50 = <span class="font-bold">15€</span> de réduction</p>
+                        <p>Prix final = 50 - 15 = <span class="font-bold text-green-600">35€</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 6 -->
+            <div id="c6" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-cyan-100 text-cyan-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">6</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Différentes écritures d'un nombre</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Un même nombre peut s'écrire de plusieurs façons. C'est comme dire la même chose dans différentes langues !
+                </p>
+                
+                <div class="mb-8">
+                    <h3 class="font-bold text-gray-800 text-xl mb-4 text-center">Le nombre "un et demi" peut s'écrire :</h3>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-blue-700 mb-2">Avec virgule</div>
+                            <div class="text-2xl font-bold">1,5</div>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-purple-700 mb-2">En fraction</div>
+                            <div class="text-2xl font-bold">3/2</div>
+                            <div class="text-sm">(trois demis)</div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-green-700 mb-2">Nombre mixte</div>
+                            <div class="text-2xl font-bold">1 ½</div>
+                            <div class="text-sm">(un et un demi)</div>
+                        </div>
+                        
+                        <div class="bg-red-50 p-4 rounded-lg text-center">
+                            <div class="text-lg font-bold text-red-700 mb-2">En pourcentage</div>
+                            <div class="text-2xl font-bold">150%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-exchange-alt text-cyan-500 mr-2"></i> <strong>Comment passer d'une écriture à l'autre ?</strong></p>
+                    
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="font-bold text-gray-800 mb-2">Fraction → Virgule</p>
+                            <p>3/4 = 3 ÷ 4 = 0,75</p>
+                        </div>
+                        
+                        <div>
+                            <p class="font-bold text-gray-800 mb-2">Virgule → Pourcentage</p>
+                            <p>0,25 = 0,25 × 100 = 25%</p>
+                        </div>
+                        
+                        <div>
+                            <p class="font-bold text-gray-800 mb-2">Pourcentage → Virgule</p>
+                            <p>60% = 60 ÷ 100 = 0,60</p>
+                        </div>
+                        
+                        <div>
+                            <p class="font-bold text-gray-800 mb-2">Nombre mixte → Fraction</p>
+                            <p>2 ¼ = (2×4 + 1)/4 = 9/4</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-sync-alt text-orange-500 mr-2"></i>Transforme ces nombres :</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p>0,75 = <span class="font-bold">75%</span> = <span class="font-bold">3/4</span></p>
+                        </div>
+                        <div>
+                            <p>1/2 = <span class="font-bold">0,5</span> = <span class="font-bold">50%</span></p>
+                        </div>
+                        <div>
+                            <p>25% = <span class="font-bold">0,25</span> = <span class="font-bold">1/4</span></p>
+                        </div>
+                        <div>
+                            <p>2,5 = <span class="font-bold">250%</span> = <span class="font-bold">5/2</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 7 et 8 -->
+            <div id="c7" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">7-8</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Demi-droite graduée</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Une demi-droite graduée est comme une règle infinie. On peut y placer des nombres pour les comparer.
+                </p>
+                
+                <!-- Droite graduée interactive -->
+                <div class="mb-8">
+                    <div class="number-line mb-4" id="numberLine">
+                        <!-- Les marques seront ajoutées par JavaScript -->
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <p class="text-gray-700 mb-3">Cette droite est graduée de 1 en 1. Où se trouve le point A d'abscisse 3,5 ?</p>
+                        
+                        <div class="flex justify-center space-x-4">
+                            <button onclick="placePoint(3.5)" class="px-4 py-2 bg-purple-500 text-white rounded-lg">
+                                Placer A(3,5)
+                            </button>
+                            <button onclick="placePoint(2.25)" class="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                                Placer B(2,25)
+                            </button>
+                            <button onclick="clearPoints()" class="px-4 py-2 bg-gray-500 text-white rounded-lg">
+                                Effacer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-ruler text-purple-500 mr-2"></i> <strong>Méthode pour placer un nombre sur une droite :</strong></p>
+                    <ol class="list-decimal pl-5 mt-2">
+                        <li>Repère la partie entière (avant la virgule)</li>
+                        <li>Compte les unités à partir de 0</li>
+                        <li>Pour la partie décimale, divise l'unité suivante</li>
+                        <li>0,5 = à mi-chemin, 0,25 = au quart, 0,75 = aux trois quarts</li>
+                    </ol>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>Exercice :</h4>
+                    <p>Sur une droite graduée de 0 à 5, où places-tu :</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                        <div class="text-center">
+                            <div class="font-bold">2,5</div>
+                            <div class="text-sm text-gray-600">À mi-chemin entre 2 et 3</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold">1,75</div>
+                            <div class="text-sm text-gray-600">Aux 3/4 entre 1 et 2</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold">4,2</div>
+                            <div class="text-sm text-gray-600">Un peu après 4</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold">0,5</div>
+                            <div class="text-sm text-gray-600">À mi-chemin entre 0 et 1</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 9 et 10 -->
+            <div id="c9" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-green-100 text-green-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">9-10</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Comparer et ordonner des nombres</h2>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="font-bold text-gray-800 text-lg mb-3">Les symboles :</h3>
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="bg-red-50 p-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-red-600 mb-2">&lt;</div>
+                            <div class="font-bold">est plus petit que</div>
+                            <div class="text-sm">Ex: 3 < 5</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-green-600 mb-2">&gt;</div>
+                            <div class="font-bold">est plus grand que</div>
+                            <div class="text-sm">Ex: 7 > 2</div>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-blue-600 mb-2">=</div>
+                            <div class="font-bold">est égal à</div>
+                            <div class="text-sm">Ex: 4,0 = 4</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-sort-amount-down text-green-500 mr-2"></i> <strong>Méthode pour comparer deux nombres décimaux :</strong></p>
+                    <ol class="step-by-step mt-3">
+                        <li><strong>Compare les parties entières</strong> (avant la virgule)<br>
+                            Ex: 12,47 et 15,2 → 12 < 15 donc 12,47 < 15,2</li>
+                        
+                        <li><strong>Si parties entières égales</strong>, compare les dixièmes (1er chiffre après la virgule)<br>
+                            Ex: 4,36 et 4,29 → parties entières égales (4=4)<br>
+                            → compare dixièmes: 3 > 2 donc 4,36 > 4,29</li>
+                        
+                        <li><strong>Si dixièmes égaux</strong>, compare les centièmes, etc.<br>
+                            Ex: 2,145 et 2,148 → 2=2 et 1=1 et 4=4 → compare millièmes: 5 < 8 donc 2,145 < 2,148</li>
+                    </ol>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Ordonner par ordre croissant :</h4>
+                        <p>Du plus petit au plus grand :</p>
+                        <p class="my-2 text-center"><span class="math-symbol">3,2</span> < <span class="math-symbol">3,5</span> < <span class="math-symbol">4,1</span> < <span class="math-symbol">4,7</span></p>
+                        <p class="text-sm text-gray-600">Comme monter une montagne : du bas vers le haut</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Ordonner par ordre décroissant :</h4>
+                        <p>Du plus grand au plus petit :</p>
+                        <p class="my-2 text-center"><span class="math-symbol">7,8</span> > <span class="math-symbol">6,9</span> > <span class="math-symbol">5,5</span> > <span class="math-symbol">4,2</span></p>
+                        <p class="text-sm text-gray-600">Comme descendre une pente : du haut vers le bas</p>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-sort text-orange-500 mr-2"></i>Exercice : Range ces nombres par ordre croissant</h4>
+                    <div class="flex flex-wrap justify-center gap-3 mb-4">
+                        <span class="visual-number">2,5</span>
+                        <span class="visual-number">1,8</span>
+                        <span class="visual-number">2,1</span>
+                        <span class="visual-number">1,5</span>
+                        <span class="visual-number">2,05</span>
+                    </div>
+                    <div class="text-center">
+                        <p>Solution : <span class="font-bold">1,5 < 1,8 < 2,05 < 2,1 < 2,5</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 11 et 12 -->
+            <div id="c11" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">11-12</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Valeurs arrondies</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Arrondir un nombre, c'est le remplacer par un nombre plus simple, mais proche.
+                </p>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-bullseye text-yellow-500 mr-2"></i> <strong>Règle d'arrondi :</strong></p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Si le chiffre après est 0, 1, 2, 3 ou 4 → on arrondit vers le bas</li>
+                        <li>Si le chiffre après est 5, 6, 7, 8 ou 9 → on arrondit vers le haut</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="font-bold text-gray-800 text-lg mb-4">Exemple : Arrondir 3,476</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-blue-800 mb-2">À l'unité</h4>
+                            <p>On regarde le premier chiffre après la virgule : 4</p>
+                            <p>4 < 5 → on arrondit vers le bas</p>
+                            <div class="text-center mt-2">
+                                <div class="text-xl">3,476 → <span class="font-bold text-2xl">3</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-purple-800 mb-2">Au dixième</h4>
+                            <p>On regarde le centième : 7</p>
+                            <p>7 ≥ 5 → on arrondit vers le haut</p>
+                            <div class="text-center mt-2">
+                                <div class="text-xl">3,476 → <span class="font-bold text-2xl">3,5</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-green-800 mb-2">Au centième</h4>
+                            <p>On regarde le millième : 6</p>
+                            <p>6 ≥ 5 → on arrondit vers le haut</p>
+                            <div class="text-center mt-2">
+                                <div class="text-xl">3,476 → <span class="font-bold text-2xl">3,48</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-calculator text-orange-500 mr-2"></i>Exercice : Arrondis ces nombres</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="font-bold mb-2">7,82 à l'unité</div>
+                            <div class="flex justify-center space-x-2">
+                                <button class="px-3 py-1 bg-gray-100 rounded">7</button>
+                                <button class="px-3 py-1 bg-green-100 rounded font-bold">8</button>
+                            </div>
+                            <div class="text-xs text-gray-600 mt-1">8 car 8 ≥ 5</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="font-bold mb-2">4,35 au dixième</div>
+                            <div class="flex justify-center space-x-2">
+                                <button class="px-3 py-1 bg-gray-100 rounded">4,3</button>
+                                <button class="px-3 py-1 bg-green-100 rounded font-bold">4,4</button>
+                            </div>
+                            <div class="text-xs text-gray-600 mt-1">4,4 car 5 ≥ 5</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="font-bold mb-2">9,284 au centième</div>
+                            <div class="flex justify-center space-x-2">
+                                <button class="px-3 py-1 bg-green-100 rounded font-bold">9,28</button>
+                                <button class="px-3 py-1 bg-gray-100 rounded">9,29</button>
+                            </div>
+                            <div class="text-xs text-gray-600 mt-1">9,28 car 4 < 5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 13 -->
+            <div id="c13" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-red-100 text-red-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">13</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Encadrer et intercaler</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Encadrer un nombre</h4>
+                        <p>C'est trouver deux nombres, l'un plus petit et l'autre plus grand.</p>
+                        <div class="text-center my-4">
+                            <div class="text-xl">Pour <span class="math-symbol">4,7</span> :</div>
+                            <div class="text-2xl font-bold mt-2">4 < 4,7 < 5</div>
+                            <p class="text-sm text-gray-600 mt-2">4,7 est compris entre 4 et 5</p>
+                        </div>
+                        
+                        <p><strong>Encadrement au dixième :</strong></p>
+                        <div class="text-center">
+                            <div class="text-xl">4,6 < 4,67 < 4,7</div>
+                        </div>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Intercaler un nombre</h4>
+                        <p>C'est trouver un nombre entre deux autres.</p>
+                        <div class="text-center my-4">
+                            <div class="text-xl">Entre <span class="math-symbol">3,2</span> et <span class="math-symbol">3,3</span> :</div>
+                            <div class="text-2xl font-bold mt-2">3,2 < 3,25 < 3,3</div>
+                            <p class="text-sm text-gray-600 mt-2">3,25 est entre 3,2 et 3,3</p>
+                        </div>
+                        
+                        <p><strong>Toujours possible :</strong></p>
+                        <p class="text-sm text-gray-600">Entre deux nombres décimaux, on peut toujours en trouver un autre !</p>
+                    </div>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-search text-red-500 mr-2"></i> <strong>Astuce pour intercaler :</strong></p>
+                    <p>Pour trouver un nombre entre 2,4 et 2,5 :</p>
+                    <ol class="list-decimal pl-5 mt-2">
+                        <li>Écris-les avec le même nombre de décimales : 2,40 et 2,50</li>
+                        <li>Cherche un nombre entre 40 et 50 : 45 par exemple</li>
+                        <li>Donc 2,45 est entre 2,4 et 2,5</li>
+                    </ol>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-brain text-orange-500 mr-2"></i>Exercice : Trouve un nombre entre</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <div>5,1 et 5,2</div>
+                            <div class="font-bold mt-1">5,15</div>
+                        </div>
+                        <div class="text-center">
+                            <div>7,8 et 7,9</div>
+                            <div class="font-bold mt-1">7,85</div>
+                        </div>
+                        <div class="text-center">
+                            <div>2,34 et 2,35</div>
+                            <div class="font-bold mt-1">2,345</div>
+                        </div>
+                        <div class="text-center">
+                            <div>0,9 et 1,0</div>
+                            <div class="font-bold mt-1">0,95</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 14 -->
+            <div id="c14" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">14</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Addition et soustraction de nombres décimaux</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Pour additionner ou soustraire des nombres décimaux, il faut aligner les virgules !
+                </p>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-align-left text-blue-500 mr-2"></i> <strong>Méthode en 3 étapes :</strong></p>
+                    <ol class="step-by-step mt-3">
+                        <li><strong>Aligne les virgules</strong> (et ajoute des zéros si nécessaire)</li>
+                        <li><strong>Additionne/soustrait</strong> comme avec des entiers</li>
+                        <li><strong>Place la virgule</strong> dans le résultat, alignée avec les autres</li>
+                    </ol>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="font-bold text-gray-800 text-lg mb-4">Exemple : 24,5 + 3,78</h3>
+                    
+                    <div class="calculator-display mb-4">
+                        2 4 , 5 0<br>
+                        + 3 , 7 8<br>
+                        ---------<br>
+                        2 8 , 2 8
+                    </div>
+                    
+                    <p class="text-gray-700">On a ajouté un 0 à 24,5 pour faire 24,50 et aligner les décimales.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Addition</h4>
+                        <div class="calculator-display">
+                            1 2 , 4 5<br>
+                            + 3 , 2 0<br>
+                            ---------<br>
+                            1 5 , 6 5
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">Astuce : vérifie avec des nombres simples : 12 + 3 = 15, c'est cohérent !</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Soustraction</h4>
+                        <div class="calculator-display">
+                            8 , 5 0<br>
+                            - 2 , 3 5<br>
+                            ---------<br>
+                            6 , 1 5
+                        </div>
+                        <p class="text-sm text-gray-600 mt-2">On a emprunté comme avec les entiers : 0-5 n'est pas possible, on emprunte 1 aux dixièmes.</p>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-coins text-orange-500 mr-2"></i>Exercice : Calcul mental</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="text-center p-3 bg-gray-50 rounded">
+                            <div>3,5 + 2,4 =</div>
+                            <div class="font-bold mt-1">5,9</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded">
+                            <div>7,8 - 3,2 =</div>
+                            <div class="font-bold mt-1">4,6</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded">
+                            <div>12,3 + 4,7 =</div>
+                            <div class="font-bold mt-1">17,0</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded">
+                            <div>9,1 - 2,8 =</div>
+                            <div class="font-bold mt-1">6,3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 15 et 16 -->
+            <div id="c15" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">15-16</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Multiplier par 0,1 ; 0,01 ; 0,001</h2>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-divide text-purple-500 mr-2"></i> <strong>Règle importante :</strong></p>
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Multiplier par 0,1 = diviser par 10</li>
+                        <li>Multiplier par 0,01 = diviser par 100</li>
+                        <li>Multiplier par 0,001 = diviser par 1000</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="font-bold text-gray-800 text-lg mb-4">Comment ça marche ?</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-purple-800 mb-2">Par 0,1</h4>
+                            <div class="text-center">
+                                <div class="text-xl mb-2">45 × 0,1 = 4,5</div>
+                                <div class="text-sm text-gray-600">(on décale la virgule de 1 rang vers la gauche)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-100 p-4 rounded-lg">
+                            <h4 class="font-bold text-purple-800 mb-2">Par 0,01</h4>
+                            <div class="text-center">
+                                <div class="text-xl mb-2">45 × 0,01 = 0,45</div>
+                                <div class="text-sm text-gray-600">(on décale la virgule de 2 rangs vers la gauche)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-200 p-4 rounded-lg">
+                            <h4 class="font-bold text-purple-800 mb-2">Par 0,001</h4>
+                            <div class="text-center">
+                                <div class="text-xl mb-2">45 × 0,001 = 0,045</div>
+                                <div class="text-sm text-gray-600">(on décale la virgule de 3 rangs vers la gauche)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-exchange-alt text-green-500 mr-2"></i>Liens avec la division :</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div>45 × 0,1 = 4,5</div>
+                            <div class="text-sm text-gray-600">et</div>
+                            <div>45 ÷ 10 = 4,5</div>
+                        </div>
+                        <div class="text-center">
+                            <div>7,2 × 0,01 = 0,072</div>
+                            <div class="text-sm text-gray-600">et</div>
+                            <div>7,2 ÷ 100 = 0,072</div>
+                        </div>
+                        <div class="text-center">
+                            <div>150 × 0,001 = 0,150</div>
+                            <div class="text-sm text-gray-600">et</div>
+                            <div>150 ÷ 1000 = 0,150</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-bolt text-orange-500 mr-2"></i>Exercice rapide :</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="text-center">
+                            <div>36 × 0,1 =</div>
+                            <div class="font-bold mt-1">3,6</div>
+                        </div>
+                        <div class="text-center">
+                            <div>8 × 0,01 =</div>
+                            <div class="font-bold mt-1">0,08</div>
+                        </div>
+                        <div class="text-center">
+                            <div>125 × 0,001 =</div>
+                            <div class="font-bold mt-1">0,125</div>
+                        </div>
+                        <div class="text-center">
+                            <div>4,5 × 0,1 =</div>
+                            <div class="font-bold mt-1">0,45</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 17, 18 et 19 -->
+            <div id="c17" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-green-100 text-green-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">17-19</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Multiplier des nombres décimaux</h2>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-times-circle text-green-500 mr-2"></i> <strong>Méthode pour multiplier deux nombres décimaux :</strong></p>
+                    <ol class="step-by-step mt-3">
+                        <li><strong>Multiplie</strong> comme s'ils étaient entiers (sans virgule)</li>
+                        <li><strong>Compte le nombre total de décimales</strong> dans les deux nombres</li>
+                        <li><strong>Place la virgule</strong> dans le résultat pour avoir ce nombre de décimales</li>
+                    </ol>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="font-bold text-gray-800 text-lg mb-4">Exemple : 2,3 × 1,5</h3>
+                    
+                    <div class="calculator-display mb-4">
+                        2 3 (2,3 sans virgule)<br>
+                        × 1 5 (1,5 sans virgule)<br>
+                        ---------<br>
+                        1 1 5<br>
+                        + 2 3<br>
+                        ---------<br>
+                        3 4 5<br>
+                        <br>
+                        Total décimales : 1 (dans 2,3) + 1 (dans 1,5) = 2<br>
+                        Résultat : 3,45
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Sens de la multiplication</h4>
+                        <p>Multiplier 2,5 par 3 :</p>
+                        <p class="text-center my-3">2,5 + 2,5 + 2,5 = 7,5</p>
+                        <p>Donc 2,5 × 3 = 7,5</p>
+                        <p class="text-sm text-gray-600 mt-2">C'est comme ajouter 2,5 trois fois de suite.</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Ordre de grandeur</h4>
+                        <p>Pour vérifier 4,2 × 3,7 :</p>
+                        <ul class="list-disc pl-5 mt-2">
+                            <li>4,2 ≈ 4</li>
+                            <li>3,7 ≈ 4</li>
+                            <li>4 × 4 = 16</li>
+                            <li>Le résultat doit être proche de 16</li>
+                            <li>4,2 × 3,7 = 15,54 ✓</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-calculator text-orange-500 mr-2"></i>Exercice : Calcule</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p>3,2 × 4 = <span class="font-bold">12,8</span></p>
+                            <p class="text-sm text-gray-600">(3,2 + 3,2 + 3,2 + 3,2)</p>
+                        </div>
+                        <div>
+                            <p>1,5 × 2,5 = <span class="font-bold">3,75</span></p>
+                            <p class="text-sm text-gray-600">(15 × 25 = 375, puis 2 décimales)</p>
+                        </div>
+                        <div>
+                            <p>0,8 × 0,4 = <span class="font-bold">0,32</span></p>
+                            <p class="text-sm text-gray-600">(8 × 4 = 32, puis 2 décimales)</p>
+                        </div>
+                        <div>
+                            <p>2,1 × 3,2 = <span class="font-bold">6,72</span></p>
+                            <p class="text-sm text-gray-600">(21 × 32 = 672, puis 2 décimales)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 20 et 21 -->
+            <div id="c20" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">20-21</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Diviser un nombre décimal par un nombre entier</h2>
+                </div>
+                
+                <p class="text-gray-700 mb-6">
+                    Pour diviser un nombre décimal par un nombre entier (inférieur à 10), on place la virgule dans le quotient dès qu'on arrive à la virgule du dividende.
+                </p>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-divide text-yellow-500 mr-2"></i> <strong>Méthode :</strong></p>
+                    <ol class="step-by-step mt-3">
+                        <li><strong>Divise la partie entière</strong> comme d'habitude</li>
+                        <li><strong>Quand tu arrives à la virgule</strong> du dividende, place une virgule dans le quotient</li>
+                        <li><strong>Continue</strong> avec la partie décimale</li>
+                        <li><strong>Ajoute des zéros</strong> si nécessaire pour finir la division</li>
+                    </ol>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="font-bold text-gray-800 text-lg mb-4">Exemple : 8,4 ÷ 4</h3>
+                    
+                    <div class="calculator-display mb-4">
+                        8 , 4  │ 4<br>
+                        8      │ 2 , 1<br>
+                        --     │<br>
+                        0 4    │<br>
+                        4      │<br>
+                        --     │<br>
+                        0      │
+                    </div>
+                    
+                    <p class="text-gray-700">On a divisé 8 par 4 = 2, puis on a abaissé le 4, placé la virgule, et divisé 4 par 4 = 1.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Avec reste nul</h4>
+                        <div class="calculator-display">
+                            1 2 , 6  │ 3<br>
+                            1 2      │ 4 , 2<br>
+                            --       │<br>
+                            0 6      │<br>
+                            6        │<br>
+                            --       │<br>
+                            0        │
+                        </div>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Avec reste non nul</h4>
+                        <div class="calculator-display">
+                            1 0 , 5  │ 4<br>
+                            8        │ 2 , 6 2 5<br>
+                            --       │<br>
+                            2 5      │<br>
+                            2 4      │<br>
+                            --       │<br>
+                            1 0      │<br>
+                            8        │<br>
+                            --       │<br>
+                            2 0      │<br>
+                            2 0      │<br>
+                            --       │<br>
+                            0        │
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-share text-orange-500 mr-2"></i>Exercice : Partage équitable</h4>
+                    <p>3 amis se partagent 7,5€. Combien chacun reçoit-il ?</p>
+                    <div class="mt-3">
+                        <p>7,5 ÷ 3 = <span class="font-bold">2,5</span></p>
+                        <p class="text-sm text-gray-600">Chacun reçoit 2,50€</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compétence 22 et 23 -->
+            <div id="c22" class="bg-white rounded-2xl shadow-lg p-8 mb-10 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 rounded-full bg-red-100 text-red-700 flex items-center justify-center mr-4">
+                        <span class="font-bold text-xl">22-23</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Division euclidienne</h2>
+                </div>
+                
+                <div class="important-box">
+                    <p><i class="fas fa-divide text-red-500 mr-2"></i> <strong>Définition :</strong> Dans une division euclidienne, on divise un nombre entier (dividende) par un autre nombre entier (diviseur) et on obtient un quotient entier et un reste entier plus petit que le diviseur.</p>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="font-bold text-gray-800 text-lg mb-4">Exemple : 17 ÷ 5</h3>
+                    
+                    <div class="calculator-display mb-4">
+                        1 7  │ 5<br>
+                        1 5  │ 3<br>
+                        --   │<br>
+                        2    │
+                    </div>
+                    
+                    <p class="text-gray-700">On dit : "Dans 17, combien de fois 5 ?" → 3 fois (car 5×3=15)</p>
+                    <p class="text-gray-700">Reste : 17 - 15 = 2</p>
+                    <p class="text-gray-700 font-bold">Donc : 17 = (5 × 3) + 2 avec 2 < 5</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Vérification</h4>
+                        <p>Pour vérifier une division euclidienne :</p>
+                        <p class="text-center my-3">(diviseur × quotient) + reste = dividende</p>
+                        <p>Exemple : 25 ÷ 7 = 3 reste 4</p>
+                        <p class="text-center">(7 × 3) + 4 = 21 + 4 = 25 ✓</p>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4 class="font-bold text-gray-800 mb-3">Reste toujours inférieur</h4>
+                        <p>Le reste doit toujours être plus petit que le diviseur :</p>
+                        <ul class="list-disc pl-5 mt-2">
+                            <li>Pour diviser par 5, reste < 5</li>
+                            <li>Pour diviser par 8, reste < 8</li>
+                            <li>Pour diviser par 12, reste < 12</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-users text-orange-500 mr-2"></i>Problème :</h4>
+                    <p>Une classe de 28 élèves doit être répartie en équipes de 6 pour un tournoi.</p>
+                    <ol class="list-decimal pl-5 mt-2">
+                        <li>Combien d'équipes complètes peut-on faire ?</li>
+                        <li>Combien d'élèves resteront sans équipe ?</li>
+                    </ol>
+                    <div class="mt-3">
+                        <p>28 ÷ 6 = 4 reste 4</p>
+                        <p>On peut faire <span class="font-bold">4 équipes</span> complètes de 6 élèves.</p>
+                        <p>Il restera <span class="font-bold">4 élèves</span> sans équipe.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">Σ</span>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold">SimosMaths</div>
+                            <div class="text-sm opacity-80">Programme de 6ème</div>
+                        </div>
+                    </div>
+                    <p class="opacity-80 mb-6">
+                        Des explications claires et des exercices adaptés pour maîtriser les maths en 6ème.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Autres chapitres de 6ème</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="#" class="hover:text-blue-300">Opérations avec les nombres décimaux</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Fractions</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Périmètres et aires</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Symétrie axiale</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">À propos</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="#" class="hover:text-blue-300">Méthode Simos</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Exercices interactifs</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Fiches de révision</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center opacity-80">
+                <p>© 2024 SimosMaths. Tous droits réservés. | Conçu pour les élèves de 6ème</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser la droite graduée
+            initNumberLine();
+            
+            // Smooth scroll pour les liens d'ancrage
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Animation des cartes au scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.card-hover').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+        
+        // Fonctions pour la droite graduée
+        function initNumberLine() {
+            const numberLine = document.getElementById('numberLine');
+            numberLine.innerHTML = '';
+            
+            // Créer les marques de 0 à 5
+            for (let i = 0; i <= 5; i++) {
+                const tick = document.createElement('div');
+                tick.className = 'tick-mark';
+                tick.style.left = `${i * 20}%`;
+                
+                const number = document.createElement('div');
+                number.className = 'tick-number';
+                number.textContent = i;
+                number.style.left = `${i * 20}%`;
+                
+                numberLine.appendChild(tick);
+                numberLine.appendChild(number);
+            }
+        }
+        
+        function placePoint(value) {
+            clearPoints();
+            
+            const numberLine = document.getElementById('numberLine');
+            const point = document.createElement('div');
+            point.className = 'point-on-line';
+            point.style.left = `${value * 20}%`;
+            
+            const label = document.createElement('div');
+            label.className = 'point-label';
+            label.textContent = value;
+            label.style.left = `${value * 20}%`;
+            
+            numberLine.appendChild(point);
+            numberLine.appendChild(label);
+        }
+        
+        function clearPoints() {
+            const numberLine = document.getElementById('numberLine');
+            const points = numberLine.querySelectorAll('.point-on-line, .point-label');
+            points.forEach(point => point.remove());
+        }
+        
+        // Animation des boutons d'exercice
+        document.querySelectorAll('.exercise-box button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

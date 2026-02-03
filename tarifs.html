@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarifs & Abonnements | SimosMaths</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fefefe;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, 
+                rgba(67, 97, 238, 0.08) 0%, 
+                rgba(58, 12, 163, 0.04) 50%, 
+                rgba(76, 201, 240, 0.05) 100%);
+        }
+        
+        .price-card {
+            transition: all 0.3s ease;
+        }
+        
+        .price-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-check {
+            color: #10b981;
+        }
+        
+        .feature-cross {
+            color: #9ca3af;
+        }
+        
+        .toggle-bg {
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .savings-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">Σ</span>
+                        </div>
+                        <div>
+                            <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SimosMaths</span>
+                            <div class="text-xs text-gray-500 -mt-1">du CP à la Terminale</div>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Accueil</a>
+                    <a href="methode.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Méthode</a>
+                    <a href="resultats.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Résultats</a>
+                    <a href="tarifs.html" class="text-blue-600 font-medium">Tarifs</a>
+                    <a href="index.html#essai" class="text-gray-700 hover:text-blue-600 font-medium transition">Essai gratuit</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="authButton" class="hidden md:block text-blue-600 hover:text-blue-800 font-medium">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                    </button>
+                    <button id="trialButton" class="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
+                        Essai gratuit 7 jours
+                    </button>
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t">
+            <div class="px-4 py-6 space-y-4">
+                <a href="index.html" class="block text-gray-700 hover:text-blue-600 font-medium">Accueil</a>
+                <a href="methode.html" class="block text-gray-700 hover:text-blue-600 font-medium">Méthode</a>
+                <a href="resultats.html" class="block text-gray-700 hover:text-blue-600 font-medium">Résultats</a>
+                <a href="tarifs.html" class="block text-blue-600 font-medium">Tarifs</a>
+                <a href="index.html#essai" class="block text-gray-700 hover:text-blue-600 font-medium">Essai gratuit</a>
+                <button id="authButtonMobile" class="w-full text-center text-blue-600 hover:text-blue-800 font-medium py-2">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+                    Des tarifs
+                    <span class="gradient-text">transparents</span>
+                </h1>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Investissez dans la réussite scolaire de votre enfant avec des formules adaptées à chaque besoin
+                </p>
+            </div>
+            
+            <!-- Périodicité Toggle -->
+            <div class="flex justify-center mb-12">
+                <div class="bg-gray-100 rounded-xl p-1 inline-flex">
+                    <button id="monthlyToggle" class="px-8 py-3 rounded-lg bg-white shadow-md font-bold text-gray-900">
+                        Mensuel
+                    </button>
+                    <button id="yearlyToggle" class="px-8 py-3 rounded-lg font-medium text-gray-600 hover:text-gray-900 transition">
+                        Annuel <span class="text-green-600 font-bold">(-30%)</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Cartes de prix -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Formule Découverte -->
+                <div class="price-card bg-white border-2 border-gray-100 rounded-2xl p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Découverte</h3>
+                        <div class="flex items-baseline justify-center">
+                            <span class="text-5xl font-bold text-gray-900 monthly-price">7,99€</span>
+                            <span class="text-5xl font-bold text-gray-900 yearly-price hidden">5,59€</span>
+                            <span class="text-gray-500 ml-2">/ mois</span>
+                        </div>
+                        <div class="text-gray-500 mt-2">Par enfant</div>
+                        <div class="yearly-price hidden mt-2">
+                            <span class="text-green-600 font-bold">67€ par an</span>
+                            <span class="text-gray-500 ml-2">(soit 5,59€/mois)</span>
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>10 exercices corrigés/mois</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Accès aux vidéos de base</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Application mobile incluse</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-times feature-cross mr-3"></i>
+                            <span>Correction détaillée des DM</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-times feature-cross mr-3"></i>
+                            <span>Simulateur d'examen</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-times feature-cross mr-3"></i>
+                            <span>Vidéos avancées Simos</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-times feature-cross mr-3"></i>
+                            <span>Suivi personnalisé</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 border-2 border-blue-500 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition" data-plan="decouverte">
+                        Choisir cette formule
+                    </button>
+                </div>
+                
+                <!-- Formule Excellence (Featured) -->
+                <div class="price-card bg-gradient-to-b from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-8 relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-full font-bold">
+                            La plus populaire
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-8 pt-4">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Excellence</h3>
+                        <div class="flex items-baseline justify-center">
+                            <span class="text-5xl font-bold text-gray-900 monthly-price">14,99€</span>
+                            <span class="text-5xl font-bold text-gray-900 yearly-price hidden">10,49€</span>
+                            <span class="text-gray-500 ml-2">/ mois</span>
+                        </div>
+                        <div class="text-gray-500 mt-2">Par enfant</div>
+                        <div class="yearly-price hidden mt-2">
+                            <span class="text-green-600 font-bold">126€ par an</span>
+                            <div class="savings-badge inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold ml-2">
+                                <i class="fas fa-piggy-bank mr-1"></i> Économisez 54€
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span class="font-medium">Exercices illimités</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Correction détaillée des DM</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Simulateur Brevet/Bac</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Vidéos avancées Simos</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Suivi personnalisé</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Rapports de progression</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Support prioritaire</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl hover:shadow-xl transition" data-plan="excellence">
+                        Essai gratuit 7 jours
+                    </button>
+                </div>
+                
+                <!-- Formule Famille -->
+                <div class="price-card bg-white border-2 border-gray-100 rounded-2xl p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Famille</h3>
+                        <div class="flex items-baseline justify-center">
+                            <span class="text-5xl font-bold text-gray-900 monthly-price">24,99€</span>
+                            <span class="text-5xl font-bold text-gray-900 yearly-price hidden">17,49€</span>
+                            <span class="text-gray-500 ml-2">/ mois</span>
+                        </div>
+                        <div class="text-gray-500 mt-2">Jusqu'à 3 enfants</div>
+                        <div class="yearly-price hidden mt-2">
+                            <span class="text-green-600 font-bold">210€ par an</span>
+                            <div class="savings-badge inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold ml-2">
+                                <i class="fas fa-piggy-bank mr-1"></i> Économisez 90€
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Tous les avantages Excellence</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>3 comptes enfants inclus</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Tableau de bord parent</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Alertes difficultés</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Rapports détaillés</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>Gestion centralisée</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check feature-check mr-3"></i>
+                            <span>+1 compte enfant gratuit</span>
+                        </li>
+                    </ul>
+                    
+                    <button class="w-full py-3 border-2 border-blue-500 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition" data-plan="famille">
+                        Choisir cette formule
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Garantie -->
+            <div class="text-center mt-12 max-w-3xl mx-auto">
+                <div class="inline-flex items-center space-x-4 bg-white rounded-2xl p-6 shadow-lg">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-green-500 text-2xl"></i>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="font-bold text-gray-900 text-lg">Garantie satisfaction 30 jours</h4>
+                        <p class="text-gray-600">Si vous n'êtes pas satisfait, nous vous remboursons intégralement votre premier paiement.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparaison des formules -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Comparaison détaillée</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Tout ce que vous obtenez avec chaque formule</p>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full bg-white rounded-2xl shadow-lg">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left p-6 font-bold text-gray-900">Fonctionnalités</th>
+                            <th class="text-center p-6 font-bold text-gray-900">Découverte</th>
+                            <th class="text-center p-6 font-bold text-gray-900">Excellence</th>
+                            <th class="text-center p-6 font-bold text-gray-900">Famille</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-6 font-medium text-gray-900">Exercices par mois</td>
+                            <td class="text-center p-6">
+                                <span class="font-bold">10</span>
+                            </td>
+                            <td class="text-center p-6">
+                                <span class="font-bold text-blue-600">Illimités</span>
+                            </td>
+                            <td class="text-center p-6">
+                                <span class="font-bold text-blue-600">Illimités</span>
+                            </td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-6 font-medium text-gray-900">Vidéos Simos</td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-6 font-medium text-gray-900">Correction détaillée DM</td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-times feature-cross"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-6 font-medium text-gray-900">Simulateur examen</td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-times feature-cross"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-6 font-medium text-gray-900">Comptes enfants</td>
+                            <td class="text-center p-6">
+                                <span class="font-bold">1</span>
+                            </td>
+                            <td class="text-center p-6">
+                                <span class="font-bold">1</span>
+                            </td>
+                            <td class="text-center p-6">
+                                <span class="font-bold text-blue-600">3</span>
+                            </td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-6 font-medium text-gray-900">Tableau de bord parent</td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-times feature-cross"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="p-6 font-medium text-gray-900">Support prioritaire</td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-times feature-cross"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                            <td class="text-center p-6">
+                                <i class="fas fa-check feature-check"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Tarifs -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Questions fréquentes</h2>
+                <p class="text-lg text-gray-600">Tout ce que vous devez savoir sur nos tarifs et abonnements</p>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- FAQ 1 -->
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                        <i class="fas fa-question-circle text-blue-500 mr-3"></i>
+                        L'essai gratuit est-il vraiment gratuit ?
+                    </h3>
+                    <p class="text-gray-600">
+                        Oui, absolument. Vous pouvez utiliser SimosMaths gratuitement pendant 7 jours sans engagement. 
+                        Aucune carte bancaire n'est requise pour commencer l'essai. À la fin de la période d'essai, 
+                        vous pourrez choisir de continuer avec l'une de nos formules payantes.
+                    </p>
+                </div>
+                
+                <!-- FAQ 2 -->
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                        <i class="fas fa-question-circle text-blue-500 mr-3"></i>
+                        Puis-je changer de formule à tout moment ?
+                    </h3>
+                    <p class="text-gray-600">
+                        Oui, vous pouvez passer d'une formule à l'autre à tout moment. Si vous passez à une formule plus 
+                        élevée, la différence sera facturée au prorata. Si vous passez à une formule inférieure, le 
+                        changement prendra effet à votre prochain cycle de facturation.
+                    </p>
+                </div>
+                
+                <!-- FAQ 3 -->
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                        <i class="fas fa-question-circle text-blue-500 mr-3"></i>
+                        Y a-t-il des frais cachés ?
+                    </h3>
+                    <p class="text-gray-600">
+                        Non, nos tarifs sont tous TTC et incluent toutes les fonctionnalités mentionnées. Il n'y a pas 
+                        de frais d'installation, de frais de résiliation ou de frais cachés. Le prix que vous voyez est 
+                        le prix que vous payez.
+                    </p>
+                </div>
+                
+                <!-- FAQ 4 -->
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                        <i class="fas fa-question-circle text-blue-500 mr-3"></i>
+                        Comment fonctionne l'abonnement annuel ?
+                    </h3>
+                    <p class="text-gray-600">
+                        Avec l'abonnement annuel, vous payez une fois par an et bénéficiez de 30% de réduction par rapport 
+                        à l'abonnement mensuel. Vous pouvez annuler à tout moment et obtenir un remboursement au prorata 
+                        des mois non utilisés.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Prêt à commencer ?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Rejoignez des centaines d'élèves qui améliorent déjà leurs résultats avec SimosMaths
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <button id="startTrial" class="px-8 py-4 bg-white text-blue-600 text-lg font-bold rounded-xl hover:shadow-2xl transition-all hover:scale-105">
+                    <i class="fas fa-play-circle mr-3"></i>Démarrer l'essai gratuit
+                </button>
+                <a href="contact.html" class="px-8 py-4 bg-transparent border-2 border-white text-white text-lg font-bold rounded-xl hover:bg-white/10 transition">
+                    <i class="fas fa-comments mr-3"></i>Nous contacter
+                </a>
+            </div>
+            <p class="text-blue-100 mt-6">
+                <i class="fas fa-lock mr-2"></i>Paiement 100% sécurisé • Sans engagement • Assistance 7j/7
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">Σ</span>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold">SimosMaths</div>
+                            <div class="text-sm opacity-80">du CP à la Terminale</div>
+                        </div>
+                    </div>
+                    <p class="opacity-80 mb-6">
+                        La plateforme d'accompagnement scolaire créée par Simos, ancien élève de prépa MPSI.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-tiktok text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-youtube text-xl"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Niveaux</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="#" class="hover:text-blue-300">Primaire (CP-CM2)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Collège (6ème-3ème)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Lycée (2nde-Terminale)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Spécialité Maths</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Ressources</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="methode.html" class="hover:text-blue-300">Notre méthode</a></li>
+                        <li><a href="resultats.html" class="hover:text-blue-300">Nos résultats</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Blog pédagogique</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Fiches gratuites</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Contact</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="mailto:contact@simosmaths.com" class="hover:text-blue-300">contact@simosmaths.com</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Support en ligne</a></li>
+                        <li><a href="#" class="hover:text-blue-300">FAQ</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Devenir partenaire</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center opacity-80">
+                <p>© 2024 SimosMaths. Tous droits réservés. | Conçu avec passion par Simos</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de paiement -->
+    <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-900">Finaliser votre inscription</h3>
+                        <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div id="paymentForm" class="space-y-4">
+                        <!-- Les informations de paiement seront chargées ici par Stripe -->
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-lock text-blue-500 text-2xl"></i>
+                            </div>
+                            <p class="text-gray-600">Redirection vers notre système de paiement sécurisé...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                const menu = document.getElementById('mobileMenu');
+                menu.classList.toggle('hidden');
+            });
+            
+            // Toggle périodicité
+            const monthlyToggle = document.getElementById('monthlyToggle');
+            const yearlyToggle = document.getElementById('yearlyToggle');
+            const monthlyPrices = document.querySelectorAll('.monthly-price');
+            const yearlyPrices = document.querySelectorAll('.yearly-price');
+            
+            monthlyToggle.addEventListener('click', function() {
+                monthlyToggle.classList.add('bg-white', 'shadow-md');
+                monthlyToggle.classList.remove('font-medium', 'text-gray-600');
+                monthlyToggle.classList.add('font-bold', 'text-gray-900');
+                
+                yearlyToggle.classList.remove('bg-white', 'shadow-md', 'font-bold', 'text-gray-900');
+                yearlyToggle.classList.add('font-medium', 'text-gray-600');
+                
+                monthlyPrices.forEach(el => el.classList.remove('hidden'));
+                yearlyPrices.forEach(el => el.classList.add('hidden'));
+            });
+            
+            yearlyToggle.addEventListener('click', function() {
+                yearlyToggle.classList.add('bg-white', 'shadow-md');
+                yearlyToggle.classList.remove('font-medium', 'text-gray-600');
+                yearlyToggle.classList.add('font-bold', 'text-gray-900');
+                
+                monthlyToggle.classList.remove('bg-white', 'shadow-md', 'font-bold', 'text-gray-900');
+                monthlyToggle.classList.add('font-medium', 'text-gray-600');
+                
+                monthlyPrices.forEach(el => el.classList.add('hidden'));
+                yearlyPrices.forEach(el => el.classList.remove('hidden'));
+            });
+            
+            // Modal de paiement
+            const paymentModal = document.getElementById('paymentModal');
+            const closeModal = document.getElementById('closeModal');
+            const startTrialButton = document.getElementById('startTrial');
+            const trialButton = document.getElementById('trialButton');
+            const planButtons = document.querySelectorAll('button[data-plan]');
+            
+            function openPaymentModal(plan, isYearly = false) {
+                paymentModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                // Ici, vous intégrerez le SDK Stripe pour charger le formulaire de paiement
+                // Exemple de structure pour Stripe Elements:
+                /*
+                const stripe = Stripe('votre_clé_publique_stripe');
+                const elements = stripe.elements();
+                
+                const card = elements.create('card');
+                card.mount('#paymentForm');
+                */
+                
+                // Pour l'instant, affichons un message
+                const paymentForm = document.getElementById('paymentForm');
+                paymentForm.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 rounded-xl p-4">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">Formule sélectionnée :</span>
+                                <span class="font-bold text-blue-600">${plan.charAt(0).toUpperCase() + plan.slice(1)}</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="font-medium">Périodicité :</span>
+                                <span class="font-bold">${isYearly ? 'Annuel' : 'Mensuel'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center py-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-gift text-green-500 text-xl"></i>
+                            </div>
+                            <p class="text-lg font-bold text-gray-900">7 jours d'essai gratuit</p>
+                            <p class="text-gray-600 mt-2">Aucun paiement requis aujourd'hui</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="terms" class="mr-3">
+                                <label for="terms" class="text-sm text-gray-600">
+                                    J'accepte les <a href="#" class="text-blue-600 hover:underline">conditions générales</a> et la 
+                                    <a href="#" class="text-blue-600 hover:underline">politique de confidentialité</a>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="newsletter" class="mr-3" checked>
+                                <label for="newsletter" class="text-sm text-gray-600">
+                                    Je souhaite recevoir des conseils et des offres exclusives
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button id="confirmTrial" class="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-lg transition">
+                            <i class="fas fa-play-circle mr-2"></i>Commencer mon essai gratuit
+                        </button>
+                        
+                        <p class="text-center text-gray-500 text-sm">
+                            <i class="fas fa-lock mr-1"></i>Paiement 100% sécurisé par Stripe
+                        </p>
+                    </div>
+                `;
+                
+                // Gérer la confirmation de l'essai
+                document.getElementById('confirmTrial')?.addEventListener('click', function() {
+                    // Ici, vous redirigerez vers la page d'authentification
+                    window.location.href = 'auth.html?trial=true&plan=' + plan;
+                });
+            }
+            
+            function closePaymentModal() {
+                paymentModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+            
+            if (closeModal) closeModal.addEventListener('click', closePaymentModal);
+            if (startTrialButton) startTrialButton.addEventListener('click', () => openPaymentModal('excellence'));
+            if (trialButton) trialButton.addEventListener('click', () => openPaymentModal('excellence'));
+            
+            planButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const plan = this.dataset.plan;
+                    const isYearly = document.querySelector('.yearly-price:not(.hidden)') !== null;
+                    openPaymentModal(plan, isYearly);
+                });
+            });
+            
+            // Fermer la modal en cliquant en dehors
+            paymentModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePaymentModal();
+                }
+            });
+            
+            // Auth buttons
+            const authButton = document.getElementById('authButton');
+            const authButtonMobile = document.getElementById('authButtonMobile');
+            
+            function handleAuthClick() {
+                window.location.href = 'auth.html';
+            }
+            
+            if (authButton) authButton.addEventListener('click', handleAuthClick);
+            if (authButtonMobile) authButtonMobile.addEventListener('click', handleAuthClick);
+            
+            // Smooth scroll
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                    
+                    // Close mobile menu if open
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

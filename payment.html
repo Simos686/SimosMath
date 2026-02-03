@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement | SimosMaths</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, 
+                rgba(67, 97, 238, 0.08) 0%, 
+                rgba(58, 12, 163, 0.04) 50%, 
+                rgba(76, 201, 240, 0.05) 100%);
+            min-height: 100vh;
+        }
+        
+        .payment-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        
+        .StripeElement {
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .StripeElement--focus {
+            border-color: #4361ee;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .StripeElement--invalid {
+            border-color: #ef4444;
+        }
+        
+        .security-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 9999px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <a href="index.html" class="inline-flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span class="text-white font-bold text-xl">Σ</span>
+                </div>
+                <div class="text-left">
+                    <div class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SimosMaths</div>
+                    <div class="text-sm text-gray-500 -mt-1">du CP à la Terminale</div>
+                </div>
+            </a>
+        </div>
+        
+        <!-- Progrès -->
+        <div class="flex items-center justify-center mb-8">
+            <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span class="text-white font-bold">1</span>
+                </div>
+                <div class="w-24 h-1 bg-gray-200 mx-2"></div>
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-gray-500 font-bold">2</span>
+                </div>
+                <div class="w-24 h-1 bg-gray-200 mx-2"></div>
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-gray-500 font-bold">3</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-between text-sm text-gray-500 mb-12">
+            <span class="font-medium text-blue-600">Informations</span>
+            <span>Paiement</span>
+            <span>Confirmation</span>
+        </div>
+        
+        <div class="payment-card p-8">
+            <!-- Récapitulatif -->
+            <div class="bg-blue-50 rounded-xl p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-lg" id="planName">Formule Excellence</h3>
+                        <div class="text-gray-600" id="planPeriod">Mensuel</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-gray-900" id="planPrice">14,99€</div>
+                        <div class="text-gray-600">par mois</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center text-green-600">
+                    <i class="fas fa-gift mr-2"></i>
+                    <span class="font-medium">7 jours d'essai gratuit inclus</span>
+                </div>
+            </div>
+            
+            <!-- Informations personnelles -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Informations personnelles</h3>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                        <input type="text" id="firstName" class="w-full p-3 border-2 border-gray-200 rounded-xl" placeholder="Jean">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                        <input type="text" id="lastName" class="w-full p-3 border-2 border-gray-200 rounded-xl" placeholder="Dupont">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="email" class="w-full p-3 border-2 border-gray-200 rounded-xl" placeholder="votre@email.com">
+                </div>
+            </div>
+            
+            <!-- Paiement -->
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 mb-6">Moyen de paiement</h3>
+                
+                <!-- Stripe Elements Container -->
+                <div id="card-element" class="mb-4"></div>
+                <div id="card-errors" class="text-red-500 text-sm mb-4 hidden"></div>
+                
+                <!-- Sécurité -->
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-4">
+                        <div class="security-badge">
+                            <i class="fas fa-lock mr-1"></i> SSL Sécurisé
+                        </div>
+                        <div class="flex space-x-2">
+                            <i class="fab fa-cc-visa text-2xl text-gray-400"></i>
+                            <i class="fab fa-cc-mastercard text-2xl text-gray-400"></i>
+                            <i class="fab fa-cc-amex text-2xl text-gray-400"></i>
+                        </div>
+                    </div>
+                    <img src="https://js.stripe.com/v3/fingerprinted/img/stripe-powered-by-4c0c8fca2f2e1c1e7d669a8b9f6d6e5e.svg" alt="Powered by Stripe" class="h-8">
+                </div>
+                
+                <!-- Conditions -->
+                <div class="flex items-start mb-8">
+                    <input type="checkbox" id="paymentTerms" class="mt-1 mr-3 rounded text-blue-600">
+                    <label for="paymentTerms" class="text-sm text-gray-600">
+                        J'autorise SimosMaths à débiter ma carte selon les conditions de l'abonnement sélectionné. 
+                        Je peux annuler à tout moment. En continuant, j'accepte les 
+                        <a href="#" class="text-blue-600 hover:underline">conditions générales</a> et la 
+                        <a href="#" class="text-blue-600 hover:underline">politique de confidentialité</a>.
+                    </label>
+                </div>
+                
+                <!-- Bouton de paiement -->
+                <button id="submit-payment" class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-lock mr-3"></i>
+                    <span id="button-text">Démarrer mon essai gratuit</span>
+                </button>
+                
+                <p class="text-center text-gray-500 text-sm mt-4">
+                    Aucun montant ne sera débité pendant les 7 jours d'essai
+                </p>
+            </div>
+        </div>
+        
+        <!-- Retour -->
+        <div class="text-center mt-6">
+            <a href="tarifs.html" class="text-blue-600 hover:underline font-medium">
+                <i class="fas fa-arrow-left mr-2"></i>Retour aux tarifs
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Stripe
+        const stripe = Stripe('pk_test_votre_clé_publique_stripe'); // Remplacez par votre clé publique Stripe
+        
+        // Initialiser Elements
+        const elements = stripe.elements();
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#424770',
+                    '::placeholder': {
+                        color: '#aab7c4',
+                    },
+                },
+                invalid: {
+                    color: '#9e2146',
+                },
+            },
+        });
+        
+        cardElement.mount('#card-element');
+        
+        // Gérer les erreurs de carte
+        cardElement.on('change', ({error}) => {
+            const displayError = document.getElementById('card-errors');
+            if (error) {
+                displayError.textContent = error.message;
+                displayError.classList.remove('hidden');
+            } else {
+                displayError.textContent = '';
+                displayError.classList.add('hidden');
+            }
+        });
+        
+        // Gérer la soumission du formulaire
+        const submitButton = document.getElementById('submit-payment');
+        const buttonText = document.getElementById('button-text');
+        
+        submitButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            // Validation des champs
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const termsAccepted = document.getElementById('paymentTerms').checked;
+            
+            if (!firstName || !lastName || !email) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            if (!termsAccepted) {
+                alert('Veuillez accepter les conditions générales');
+                return;
+            }
+            
+            // Désactiver le bouton pendant le traitement
+            submitButton.disabled = true;
+            buttonText.textContent = 'Traitement en cours...';
+            
+            try {
+                // Récupérer les paramètres de l'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const plan = urlParams.get('plan') || 'excellence';
+                const trial = urlParams.get('trial') === 'true';
+                const isYearly = urlParams.get('period') === 'yearly';
+                
+                // Mettre à jour l'affichage
+                updatePlanDisplay(plan, isYearly);
+                
+                // Créer le paiement côté serveur
+                const response = await fetch('/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        plan: plan,
+                        period: isYearly ? 'yearly' : 'monthly',
+                        trial: trial,
+                        customer: {
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email
+                        }
+                    }),
+                });
+                
+                const {clientSecret, subscriptionId} = await response.json();
+                
+                // Confirmer le paiement avec Stripe
+                const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: `${firstName} ${lastName}`,
+                            email: email,
+                        },
+                    },
+                });
+                
+                if (error) {
+                    // Afficher l'erreur
+                    const displayError = document.getElementById('card-errors');
+                    displayError.textContent = error.message;
+                    displayError.classList.remove('hidden');
+                    
+                    // Réactiver le bouton
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Démarrer mon essai gratuit';
+                } else if (paymentIntent.status === 'succeeded') {
+                    // Paiement réussi
+                    buttonText.textContent = 'Paiement réussi !';
+                    
+                    // Enregistrer l'abonnement dans Supabase
+                    await saveSubscriptionToSupabase({
+                        subscriptionId: subscriptionId,
+                        customerEmail: email,
+                        customerName: `${firstName} ${lastName}`,
+                        plan: plan,
+                        period: isYearly ? 'yearly' : 'monthly',
+                        status: 'active',
+                        trialEnd: trial ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() : null
+                    });
+                    
+                    // Rediriger vers la page de confirmation
+                    setTimeout(() => {
+                        window.location.href = `confirmation.html?subscription=${subscriptionId}`;
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue. Veuillez réessayer.');
+                
+                // Réactiver le bouton
+                submitButton.disabled = false;
+                buttonText.textContent = 'Démarrer mon essai gratuit';
+            }
+        });
+        
+        function updatePlanDisplay(plan, isYearly) {
+            const planNames = {
+                decouverte: 'Formule Découverte',
+                excellence: 'Formule Excellence',
+                famille: 'Formule Famille'
+            };
+            
+            const monthlyPrices = {
+                decouverte: '7,99€',
+                excellence: '14,99€',
+                famille: '24,99€'
+            };
+            
+            const yearlyPrices = {
+                decouverte: '5,59€',
+                excellence: '10,49€',
+                famille: '17,49€'
+            };
+            
+            document.getElementById('planName').textContent = planNames[plan];
+            document.getElementById('planPeriod').textContent = isYearly ? 'Annuel' : 'Mensuel';
+            document.getElementById('planPrice').textContent = isYearly ? yearlyPrices[plan] : monthlyPrices[plan];
+        }
+        
+        async function saveSubscriptionToSupabase(subscriptionData) {
+            // Ici, vous intégrerez Supabase pour sauvegarder l'abonnement
+            // Exemple :
+            /*
+            const { data, error } = await supabase
+                .from('subscriptions')
+                .insert([subscriptionData]);
+            
+            if (error) throw error;
+            return data;
+            */
+            
+            // Pour l'instant, simulation
+            console.log('Sauvegarde de l\'abonnement:', subscriptionData);
+            return { success: true };
+        }
+        
+        // Initialiser l'affichage du plan
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const plan = urlParams.get('plan') || 'excellence';
+            const isYearly = urlParams.get('period') === 'yearly';
+            const trial = urlParams.get('trial') === 'true';
+            
+            updatePlanDisplay(plan, isYearly);
+            
+            if (trial) {
+                buttonText.textContent = 'Démarrer mon essai gratuit';
+            }
+        });
+    </script>
+</body>
+</html>

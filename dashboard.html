@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord | SimosMaths</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+        }
+        
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-item {
+            transition: all 0.3s ease;
+            border-radius: 0.75rem;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(67, 97, 238, 0.2);
+            border-left: 4px solid #4361ee;
+        }
+        
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 1.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 text-white p-6 hidden md:block">
+            <!-- Logo -->
+            <div class="mb-8">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">Σ</span>
+                    </div>
+                    <div>
+                        <div class="text-xl font-bold">SimosMaths</div>
+                        <div class="text-xs opacity-80">Tableau de bord</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="space-y-2">
+                <a href="#overview" class="nav-item flex items-center space-x-3 p-3 active">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Vue d'ensemble</span>
+                </a>
+                <a href="#children" class="nav-item flex items-center space-x-3 p-3">
+                    <i class="fas fa-child w-5"></i>
+                    <span>Mes enfants</span>
+                </a>
+                <a href="#progress" class="nav-item flex items-center space-x-3 p-3">
+                    <i class="fas fa-tasks w-5"></i>
+                    <span>Progression</span>
+                </a>
+                <a href="#exercises" class="nav-item flex items-center space-x-3 p-3">
+                    <i class="fas fa-calculator w-5"></i>
+                    <span>Exercices</span>
+                </a>
+                <a href="#videos" class="nav-item flex items-center space-x-3 p-3">
+                    <i class="fas fa-video w-5"></i>
+                    <span>Vidéos</span>
+                </a>
+                <a href="#subscription" class="nav-item flex items-center space-x-3 p-3">
+                    <i class="fas fa-credit-card w-5"></i>
+                    <span>Abonnement</span>
+                </a>
+                <a href="#settings" class="nav-item flex items-center space-x-3 p-3">
+                    <i class="fas fa-cog w-5"></i>
+                    <span>Paramètres</span>
+                </a>
+            </nav>
+            
+            <!-- Compte -->
+            <div class="mt-12 pt-8 border-t border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span class="font-bold">JD</span>
+                    </div>
+                    <div>
+                        <div class="font-medium" id="userName">Jean Dupont</div>
+                        <div class="text-sm opacity-80" id="userEmail">jean@email.com</div>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="w-full mt-4 p-2 text-red-300 hover:text-red-100 hover:bg-red-900/20 rounded-lg transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                </button>
+            </div>
+        </div>
+        
+        <!-- Contenu principal -->
+        <div class="flex-1">
+            <!-- Header mobile -->
+            <div class="md:hidden bg-white border-b p-4 flex justify-between items-center">
+                <button id="mobileMenuBtn" class="text-gray-700">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <span class="text-white font-bold">Σ</span>
+                    </div>
+                    <span class="font-bold text-gray-900">Dashboard</span>
+                </div>
+                <div class="w-6"></div>
+            </div>
+            
+            <!-- Vue d'ensemble -->
+            <div id="overview" class="p-6">
+                <!-- Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Bonjour, <span id="greetingName">Jean</span> 👋</h1>
+                    <p class="text-gray-600">Voici un résumé de l'activité de vos enfants</p>
+                </div>
+                
+                <!-- Statistiques -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card bg-white rounded-xl p-6 shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-calculator text-blue-500 text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-gray-900" id="totalExercises">42</div>
+                                <div class="text-sm text-gray-500">Exercices</div>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-gray-900">Complétés cette semaine</h3>
+                    </div>
+                    
+                    <div class="stat-card bg-white rounded-xl p-6 shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-chart-line text-green-500 text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-gray-900" id="successRate">78%</div>
+                                <div class="text-sm text-gray-500">Réussite</div>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-gray-900">Taux de réussite moyen</h3>
+                    </div>
+                    
+                    <div class="stat-card bg-white rounded-xl p-6 shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-clock text-purple-500 text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-gray-900" id="timeSpent">6h</div>
+                                <div class="text-sm text-gray-500">Temps total</div>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-gray-900">Temps d'apprentissage</h3>
+                    </div>
+                    
+                    <div class="stat-card bg-white rounded-xl p-6 shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-trophy text-orange-500 text-2xl"></i>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-gray-900" id="streak">7</div>
+                                <div class="text-sm text-gray-500">Jours</div>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-gray-900">Série en cours</h3>
+                    </div>
+                </div>
+                
+                <!-- Graphiques et enfants -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Graphique de progression -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <h2 class="text-xl font-bold text-gray-900 mb-6">Progression mensuelle</h2>
+                            <div class="h-64">
+                                <canvas id="progressChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Liste des enfants -->
+                    <div>
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-bold text-gray-900">Mes enfants</h2>
+                                <button class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="space-y-4" id="childrenList">
+                                <!-- Les enfants seront chargés ici -->
+                                <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                        L
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-gray-900">Lucas</div>
+                                        <div class="text-sm text-gray-600">5ème • Collège Saint-Exupéry</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-lg font-bold text-green-600">14/20</div>
+                                        <div class="text-xs text-gray-500">Moyenne</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center p-3 bg-purple-50 rounded-lg">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                                        E
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-bold text-gray-900">Emma</div>
+                                        <div class="text-sm text-gray-600">CM2 • École Primaire</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-lg font-bold text-blue-600">16/20</div>
+                                        <div class="text-xs text-gray-500">Moyenne</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Prochaines activités -->
+                <div class="mt-8">
+                    <div class="bg-white rounded-xl shadow p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-6">Activités récentes</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b">
+                                        <th class="text-left py-3 text-gray-700">Enfant</th>
+                                        <th class="text-left py-3 text-gray-700">Activité</th>
+                                        <th class="text-left py-3 text-gray-700">Matière</th>
+                                        <th class="text-left py-3 text-gray-700">Résultat</th>
+                                        <th class="text-left py-3 text-gray-700">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activitiesTable">
+                                    <!-- Les activités seront chargées ici -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile Sidebar -->
+    <div id="mobileSidebar" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex h-full">
+            <div class="sidebar w-64 p-6">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold">Σ</span>
+                        </div>
+                        <span class="font-bold">Dashboard</span>
+                    </div>
+                    <button id="closeMobileMenu" class="text-white">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Navigation mobile -->
+                <nav class="space-y-2">
+                    <a href="#overview" class="nav-item flex items-center space-x-3 p-3 active">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span>Vue d'ensemble</span>
+                    </a>
+                    <a href="#children" class="nav-item flex items-center space-x-3 p-3">
+                        <i class="fas fa-child w-5"></i>
+                        <span>Mes enfants</span>
+                    </a>
+                    <a href="#progress" class="nav-item flex items-center space-x-3 p-3">
+                        <i class="fas fa-tasks w-5"></i>
+                        <span>Progression</span>
+                    </a>
+                    <a href="#exercises" class="nav-item flex items-center space-x-3 p-3">
+                        <i class="fas fa-calculator w-5"></i>
+                        <span>Exercices</span>
+                    </a>
+                    <a href="#videos" class="nav-item flex items-center space-x-3 p-3">
+                        <i class="fas fa-video w-5"></i>
+                        <span>Vidéos</span>
+                    </a>
+                    <a href="#subscription" class="nav-item flex items-center space-x-3 p-3">
+                        <i class="fas fa-credit-card w-5"></i>
+                        <span>Abonnement</span>
+                    </a>
+                    <a href="#settings" class="nav-item flex items-center space-x-3 p-3">
+                        <i class="fas fa-cog w-5"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="flex-1" id="mobileOverlay"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Menu mobile
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            const closeMobileMenu = document.getElementById('closeMobileMenu');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileSidebar.classList.remove('hidden');
+            });
+            
+            closeMobileMenu.addEventListener('click', () => {
+                mobileSidebar.classList.add('hidden');
+            });
+            
+            mobileOverlay.addEventListener('click', () => {
+                mobileSidebar.classList.add('hidden');
+            });
+            
+            // Navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Retirer la classe active de tous les items
+                    navItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Ajouter la classe active à l'item cliqué
+                    this.classList.add('active');
+                    
+                    // Fermer le menu mobile si ouvert
+                    mobileSidebar.classList.add('hidden');
+                    
+                    // Charger le contenu de la section
+                    const sectionId = this.getAttribute('href').substring(1);
+                    loadSection(sectionId);
+                });
+            });
+            
+            // Graphique de progression
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            const progressChart = new Chart(progressCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                    datasets: [{
+                        label: 'Exercices réussis',
+                        data: [12, 19, 15, 25],
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Vidéos regardées',
+                        data: [8, 12, 10, 18],
+                        borderColor: '#f72585',
+                        backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Charger les données utilisateur
+            loadUserData();
+            
+            // Déconnexion
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                // Ici, vous intégrerez Supabase Auth pour la déconnexion
+                /*
+                await supabase.auth.signOut();
+                window.location.href = 'index.html';
+                */
+                window.location.href = 'index.html';
+            });
+            
+            async function loadUserData() {
+                try {
+                    // Ici, vous récupérerez les données depuis Supabase
+                    // Exemple :
+                    /*
+                    const { data: { user } } = await supabase.auth.getUser();
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    // Mettre à jour l'interface
+                    document.getElementById('userName').textContent = `${profile.first_name} ${profile.last_name}`;
+                    document.getElementById('userEmail').textContent = user.email;
+                    document.getElementById('greetingName').textContent = profile.first_name;
+                    */
+                    
+                    // Pour l'instant, données simulées
+                    document.getElementById('userName').textContent = 'Jean Dupont';
+                    document.getElementById('userEmail').textContent = 'jean@email.com';
+                    document.getElementById('greetingName').textContent = 'Jean';
+                    
+                } catch (error) {
+                    console.error('Erreur lors du chargement des données:', error);
+                }
+            }
+            
+            async function loadSection(sectionId) {
+                // Charger dynamiquement le contenu de la section
+                const mainContent = document.querySelector('.flex-1');
+                
+                // Ici, vous chargeriez le contenu depuis le serveur ou le rendriez dynamiquement
+                // Pour l'instant, nous restons sur la vue d'ensemble
+                
+                // Faire défiler vers le haut
+                window.scrollTo(0, 0);
+            }
+            
+            // Simuler le chargement des activités
+            setTimeout(() => {
+                const activitiesTable = document.getElementById('activitiesTable');
+                if (activitiesTable) {
+                    activitiesTable.innerHTML = `
+                        <tr class="border-b">
+                            <td class="py-3">Lucas</td>
+                            <td class="py-3">Exercice de géométrie</td>
+                            <td class="py-3">Mathématiques</td>
+                            <td class="py-3">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">16/20</span>
+                            </td>
+                            <td class="py-3">Aujourd'hui, 14:30</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-3">Emma</td>
+                            <td class="py-3">Tables de multiplication</td>
+                            <td class="py-3">Mathématiques</td>
+                            <td class="py-3">
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">20/20</span>
+                            </td>
+                            <td class="py-3">Aujourd'hui, 10:15</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-3">Lucas</td>
+                            <td class="py-3">Vidéo "Théorème de Pythagore"</td>
+                            <td class="py-3">Mathématiques</td>
+                            <td class="py-3">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Regardée</span>
+                            </td>
+                            <td class="py-3">Hier, 16:45</td>
+                        </tr>
+                    `;
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

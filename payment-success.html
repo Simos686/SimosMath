@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Réussi - SimosMaths</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes checkmark {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .checkmark {
+            animation: checkmark 0.6s ease-out;
+        }
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti 3s linear forwards;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-50 min-h-screen">
+    <div class="container mx-auto px-4 py-16">
+        <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl p-8 md:p-12">
+            <!-- Animation de succès -->
+            <div class="text-center mb-8">
+                <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 checkmark">
+                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">Paiement Réussi !</h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    Félicitations, votre abonnement SimosMaths est maintenant actif
+                </p>
+            </div>
+
+            <!-- Détails du paiement -->
+            <div id="payment-details" class="bg-gray-50 rounded-2xl p-6 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Détails de votre abonnement</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700">Formule</span>
+                        <span id="plan-name" class="font-bold text-blue-600 text-lg">Excellence</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700">Périodicité</span>
+                        <span id="plan-period" class="font-bold">Mensuel</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700">Montant</span>
+                        <span id="payment-amount" class="font-bold text-green-600 text-xl">14,99€</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700">Date</span>
+                        <span id="payment-date" class="font-medium">26 décembre 2024</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700">ID de transaction</span>
+                        <span id="transaction-id" class="text-sm font-mono text-gray-500">pi_123456789</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Essai gratuit -->
+            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl p-6 mb-8">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">7 jours d'essai gratuit</h3>
+                        <p class="text-gray-600">Profitez de tous les avantages dès maintenant</p>
+                    </div>
+                </div>
+                <p class="text-gray-700">
+                    Votre essai gratuit se termine le <span id="trial-end" class="font-bold">2 janvier 2025</span>. 
+                    Aucun prélèvement ne sera effectué avant cette date.
+                </p>
+            </div>
+
+            <!-- Prochaines étapes -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Prochaines étapes</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="/dashboard.html" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-center py-4 rounded-xl font-bold hover:shadow-lg transition">
+                        <div class="text-2xl mb-2">👨‍👦</div>
+                        Ajouter un enfant
+                    </a>
+                    <a href="/exercises.html" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-center py-4 rounded-xl font-bold hover:shadow-lg transition">
+                        <div class="text-2xl mb-2">📚</div>
+                        Commencer un exercice
+                    </a>
+                    <a href="/videos.html" class="bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-4 rounded-xl font-bold hover:shadow-lg transition">
+                        <div class="text-2xl mb-2">🎥</div>
+                        Regarder des vidéos
+                    </a>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col md:flex-row gap-4">
+                <a href="/dashboard.html" class="flex-1 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center rounded-xl font-bold hover:shadow-xl transition hover:scale-105">
+                    Accéder à mon tableau de bord
+                </a>
+                <a href="/index.html" class="flex-1 py-4 border-2 border-blue-500 text-blue-600 text-center rounded-xl font-bold hover:bg-blue-50 transition">
+                    Retour à l'accueil
+                </a>
+            </div>
+
+            <!-- Support -->
+            <div class="mt-8 pt-8 border-t border-gray-200 text-center">
+                <p class="text-gray-600 mb-2">Des questions sur votre abonnement ?</p>
+                <a href="mailto:support@simosmaths.com" class="text-blue-600 hover:underline font-medium">
+                    support@simosmaths.com
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getPaymentDetails } from './stripe-handler.js';
+
+        async function loadPaymentDetails() {
+            try {
+                // Récupérer l'ID de session depuis l'URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const sessionId = urlParams.get('session_id');
+                
+                if (!sessionId) {
+                    throw new Error('Aucun ID de session trouvé');
+                }
+
+                // Récupérer les détails du paiement
+                const paymentDetails = await getPaymentDetails(sessionId);
+                
+                if (paymentDetails) {
+                    // Mettre à jour l'interface
+                    document.getElementById('plan-name').textContent = 
+                        paymentDetails.plan === 'decouverte' ? 'Découverte' :
+                        paymentDetails.plan === 'excellence' ? 'Excellence' : 'Famille';
+                    
+                    document.getElementById('plan-period').textContent = 
+                        paymentDetails.period === 'monthly' ? 'Mensuel' : 'Annuel';
+                    
+                    document.getElementById('payment-amount').textContent = 
+                        new Intl.NumberFormat('fr-FR', {
+                            style: 'currency',
+                            currency: paymentDetails.currency || 'EUR'
+                        }).format(paymentDetails.amount / 100);
+                    
+                    document.getElementById('transaction-id').textContent = 
+                        sessionId.substring(0, 20) + '...';
+                    
+                    document.getElementById('payment-date').textContent = 
+                        new Date().toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                    
+                    // Calculer la fin de l'essai (7 jours)
+                    const trialEnd = new Date();
+                    trialEnd.setDate(trialEnd.getDate() + 7);
+                    
+                    document.getElementById('trial-end').textContent = 
+                        trialEnd.toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+                }
+
+                // Créer des confettis
+                createConfetti();
+
+            } catch (error) {
+                console.error('Erreur chargement détails:', error);
+                // Rediriger vers la page des tarifs en cas d'erreur
+                setTimeout(() => {
+                    window.location.href = '/tarifs.html';
+                }, 3000);
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#4ade80', '#60a5fa', '#fbbf24', '#f472b6', '#8b5cf6'];
+            const container = document.body;
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(confetti);
+                
+                // Supprimer après l'animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+
+        // Exécuter au chargement
+        document.addEventListener('DOMContentLoaded', loadPaymentDetails);
+    </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+// exercises.js - Logique des exercices
+import { supabase, getExercises, saveExerciseSession } from './supabase-client.js';
+
+class ExerciseManager {
+    constructor() {
+        this.currentExercise = null;
+        this.currentLevel = 'college';
+        this.currentSubject = 'math';
+        this.initialize();
+    }
+
+    async initialize() {
+        try {
+            // Vérifier l'authentification
+            const user = await supabase.auth.getUser();
+            if (!user.data.user) {
+                window.location.href = '/auth.html';
+                return;
+            }
+
+            // Charger les exercices
+            await this.loadExercises();
+            
+            // Initialiser les événements
+            this.setupEventListeners();
+            
+            // Démarrer avec le premier exercice
+            if (this.exercises.length > 0) {
+                this.showExercise(this.exercises[0]);
+            }
+
+        } catch (error) {
+            console.error('Erreur initialisation exercices:', error);
+            this.showError('Erreur de chargement des exercices');
+        }
+    }
+
+    async loadExercises() {
+        try {
+            this.exercises = await getExercises(this.currentLevel, this.currentSubject, 20);
+            
+            if (this.exercises.length === 0) {
+                this.showNoExercises();
+            }
+
+        } catch (error) {
+            console.error('Erreur chargement exercices:', error);
+            throw error;
+        }
+    }
+
+    setupEventListeners() {
+        // Filtres de niveau
+        const levelFilters = document.querySelectorAll('.level-filter');
+        levelFilters.forEach(filter => {
+            filter.addEventListener('click', (e) => {
+                const level = e.target.dataset.level;
+                this.changeLevel(level);
+            });
+        });
+
+        // Filtres de matière
+        const subjectFilters = document.querySelectorAll('.subject-filter');
+        subjectFilters.forEach(filter => {
+            filter.addEventListener('click', (e) => {
+                const subject = e.target.dataset.subject;
+                this.changeSubject(subject);
+            });
+        });
+
+        // Soumission de réponse
+        const submitBtn = document.getElementById('submit-answer');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', () => this.submitAnswer());
+        }
+
+        // Indice
+        const hintBtn = document.getElementById('show-hint');
+        if (hintBtn) {
+            hintBtn.addEventListener('click', () => this.showHint());
+        }
+
+        // Navigation
+        const nextBtn = document.getElementById('next-exercise');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextExercise());
+        }
+
+        const prevBtn = document.getElementById('prev-exercise');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.previousExercise());
+        }
+    }
+
+    showExercise(exercise) {
+        this.currentExercise = exercise;
+        
+        // Mettre à jour l'interface
+        document.getElementById('exercise-title').textContent = exercise.title;
+        document.getElementById('exercise-question').textContent = exercise.question;
+        
+        // Réinitialiser l'interface de réponse
+        document.getElementById('user-answer').value = '';
+        document.getElementById('hint-container').classList.add('hidden');
+        document.getElementById('result-container').classList.add('hidden');
+        
+        // Mettre à jour les métadonnées
+        document.getElementById('exercise-difficulty').textContent = 
+            'Difficulté: ' + '★'.repeat(exercise.difficulty);
+        document.getElementById('exercise-points').textContent = 
+            exercise.points + ' points';
+        
+        // Démarrer le chronomètre
+        this.startTimer();
+    }
+
+    async submitAnswer() {
+        try {
+            const userAnswer = document.getElementById('user-answer').value;
+            
+            if (!userAnswer.trim()) {
+                this.showError('Veuillez entrer une réponse');
+                return;
+            }
+
+            // Vérifier l'authentification
+            const user = await supabase.auth.getUser();
+            if (!user.data.user) {
+                throw new Error('Utilisateur non authentifié');
+            }
+
+            // Récupérer le premier enfant (pour l'exemple)
+            const children = await supabase.getChildren(user.data.user.id);
+            if (children.length === 0) {
+                this.showError('Ajoutez un enfant pour enregistrer vos résultats');
+                return;
+            }
+
+            const childId = children[0].id;
+            const timeSpent = this.getElapsedTime();
+            
+            // Simuler la correction (à remplacer par une vraie logique)
+            const isCorrect = this.checkAnswer(userAnswer, this.currentExercise.solution);
+            const score = isCorrect ? 20 : 10;
+
+            // Enregistrer la session
+            const result = await saveExerciseSession({
+                childId: childId,
+                exerciseId: this.currentExercise.id,
+                userAnswer: userAnswer,
+                correct: isCorrect,
+                score: score,
+                timeSpent: timeSpent
+            });
+
+            if (result.success) {
+                // Afficher le résultat
+                this.showResult(isCorrect, score, this.currentExercise.solution);
+                
+                // Arrêter le chronomètre
+                this.stopTimer();
+            } else {
+                throw new Error(result.error);
+            }
+
+        } catch (error) {
+            console.error('Erreur soumission:', error);
+            this.showError('Erreur lors de la soumission: ' + error.message);
+        }
+    }
+
+    checkAnswer(userAnswer, correctSolution) {
+        // Logique de vérification simple (à améliorer)
+        const normalizedUser = userAnswer.toLowerCase().trim();
+        const normalizedCorrect = correctSolution.toLowerCase().trim();
+        
+        // Pour l'exemple, on vérifie l'égalité exacte
+        // En réalité, vous devriez implémenter une logique de vérification mathématique
+        return normalizedUser === normalizedCorrect;
+    }
+
+    showResult(isCorrect, score, solution) {
+        const resultContainer = document.getElementById('result-container');
+        const resultIcon = document.getElementById('result-icon');
+        const resultText = document.getElementById('result-text');
+        const resultScore = document.getElementById('result-score');
+        const solutionText = document.getElementById('solution-text');
+
+        // Mettre à jour les éléments
+        if (isCorrect) {
+            resultIcon.className = 'fas fa-check-circle text-4xl text-green-500';
+            resultText.textContent = 'Bravo ! Réponse correcte';
+            resultText.className = 'text-green-700 font-bold text-lg';
+        } else {
+            resultIcon.className = 'fas fa-times-circle text-4xl text-red-500';
+            resultText.textContent = 'Réponse incorrecte';
+            resultText.className = 'text-red-700 font-bold text-lg';
+        }
+
+        resultScore.textContent = `Score: ${score}/20`;
+        solutionText.textContent = `Solution: ${solution}`;
+
+        // Afficher le conteneur
+        resultContainer.classList.remove('hidden');
+        
+        // Animer
+        resultContainer.style.animation = 'none';
+        setTimeout(() => {
+            resultContainer.style.animation = 'fadeIn 0.5s ease-out';
+        }, 10);
+    }
+
+    showHint() {
+        const hintContainer = document.getElementById('hint-container');
+        const hintText = document.getElementById('hint-text');
+        
+        if (this.currentExercise.hints && this.currentExercise.hints.length > 0) {
+            // Afficher le premier indice (vous pourriez en afficher plus)
+            hintText.textContent = this.currentExercise.hints[0];
+            hintContainer.classList.remove('hidden');
+        } else {
+            hintText.textContent = "Aucun indice disponible pour cet exercice.";
+            hintContainer.classList.remove('hidden');
+        }
+    }
+
+    nextExercise() {
+        const currentIndex = this.exercises.findIndex(e => e.id === this.currentExercise.id);
+        if (currentIndex < this.exercises.length - 1) {
+            this.showExercise(this.exercises[currentIndex + 1]);
+        }
+    }
+
+    previousExercise() {
+        const currentIndex = this.exercises.findIndex(e => e.id === this.currentExercise.id);
+        if (currentIndex > 0) {
+            this.showExercise(this.exercises[currentIndex - 1]);
+        }
+    }
+
+    async changeLevel(level) {
+        this.currentLevel = level;
+        await this.loadExercises();
+        
+        if (this.exercises.length > 0) {
+            this.showExercise(this.exercises[0]);
+        }
+        
+        // Mettre à jour l'interface des filtres
+        this.updateFilterUI();
+    }
+
+    async changeSubject(subject) {
+        this.currentSubject = subject;
+        await this.loadExercises();
+        
+        if (this.exercises.length > 0) {
+            this.showExercise(this.exercises[0]);
+        }
+        
+        // Mettre à jour l'interface des filtres
+        this.updateFilterUI();
+    }
+
+    updateFilterUI() {
+        // Mettre à jour les filtres actifs
+        document.querySelectorAll('.level-filter').forEach(filter => {
+            if (filter.dataset.level === this.currentLevel) {
+                filter.classList.add('bg-blue-500', 'text-white');
+                filter.classList.remove('bg-gray-100', 'text-gray-700');
+            } else {
+                filter.classList.remove('bg-blue-500', 'text-white');
+                filter.classList.add('bg-gray-100', 'text-gray-700');
+            }
+        });
+
+        document.querySelectorAll('.subject-filter').forEach(filter => {
+            if (filter.dataset.subject === this.currentSubject) {
+                filter.classList.add('bg-purple-500', 'text-white');
+                filter.classList.remove('bg-gray-100', 'text-gray-700');
+            } else {
+                filter.classList.remove('bg-purple-500', 'text-white');
+                filter.classList.add('bg-gray-100', 'text-gray-700');
+            }
+        });
+    }
+
+    startTimer() {
+        this.startTime = Date.now();
+        this.timerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+            document.getElementById('timer').textContent = 
+                `${Math.floor(elapsed / 60)}:${(elapsed % 60).toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    getElapsedTime() {
+        return Math.floor((Date.now() - this.startTime) / 1000);
+    }
+
+    showNoExercises() {
+        const container = document.getElementById('exercises-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-search text-gray-400 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Aucun exercice trouvé</h3>
+                    <p class="text-gray-600 mb-6">
+                        Aucun exercice n'est disponible pour cette combinaison niveau/matière.
+                    </p>
+                    <button onclick="location.reload()" 
+                            class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-lg hover:shadow-lg transition">
+                        Recharger les exercices
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    showError(message) {
+        // Implémenter l'affichage d'erreur
+        alert(message);
+    }
+}
+
+// Initialiser le gestionnaire d'exercices
+let exerciseManager;
+document.addEventListener('DOMContentLoaded', () => {
+    exerciseManager = new ExerciseManager();
+    window.exerciseManager = exerciseManager;
+});

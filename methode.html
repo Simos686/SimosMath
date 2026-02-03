@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notre Méthode | SimosMaths</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fefefe;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, 
+                rgba(67, 97, 238, 0.08) 0%, 
+                rgba(58, 12, 163, 0.04) 50%, 
+                rgba(76, 201, 240, 0.05) 100%);
+        }
+        
+        .step-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .step-card:hover {
+            border-left-color: var(--primary);
+            transform: translateX(10px);
+        }
+        
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .testimonial-card {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
+        }
+        
+        .method-step {
+            counter-increment: step;
+            position: relative;
+        }
+        
+        .method-step::before {
+            content: counter(step);
+            position: absolute;
+            left: -50px;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">Σ</span>
+                        </div>
+                        <div>
+                            <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">SimosMaths</span>
+                            <div class="text-xs text-gray-500 -mt-1">du CP à la Terminale</div>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Accueil</a>
+                    <a href="methode.html" class="text-blue-600 font-medium">Méthode</a>
+                    <a href="resultats.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Résultats</a>
+                    <a href="tarifs.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Tarifs</a>
+                    <a href="index.html#essai" class="text-gray-700 hover:text-blue-600 font-medium transition">Essai gratuit</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="authButton" class="hidden md:block text-blue-600 hover:text-blue-800 font-medium">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                    </button>
+                    <a href="tarifs.html" class="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all hover:scale-105">
+                        Essai gratuit 7 jours
+                    </a>
+                    <button id="mobileMenuBtn" class="md:hidden text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t">
+            <div class="px-4 py-6 space-y-4">
+                <a href="index.html" class="block text-gray-700 hover:text-blue-600 font-medium">Accueil</a>
+                <a href="methode.html" class="block text-blue-600 font-medium">Méthode</a>
+                <a href="resultats.html" class="block text-gray-700 hover:text-blue-600 font-medium">Résultats</a>
+                <a href="tarifs.html" class="block text-gray-700 hover:text-blue-600 font-medium">Tarifs</a>
+                <a href="index.html#essai" class="block text-gray-700 hover:text-blue-600 font-medium">Essai gratuit</a>
+                <button id="authButtonMobile" class="w-full text-center text-blue-600 hover:text-blue-800 font-medium py-2">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+                    La méthode
+                    <span class="gradient-text">SimosMaths</span>
+                </h1>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Une approche pédagogique unique qui a fait ses preuves auprès de centaines d'élèves
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="bg-white rounded-2xl shadow-xl p-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Notre philosophie</h3>
+                        <p class="text-gray-600 mb-6">
+                            <span class="font-bold text-blue-600">"Les maths ne sont pas difficiles, elles sont juste différentes."</span>
+                            C'est avec cette conviction que j'ai créé SimosMaths. Après avoir accompagné des dizaines d'élèves en cours particuliers, 
+                            j'ai identifié les points bloquants communs et développé une méthode qui transforme l'apprentissage.
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-tie text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-900">Simos, Fondateur</div>
+                                <div class="text-gray-500">Ancien MPSI • 2 ans d'expérience en cours particuliers</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-bullseye text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">Notre objectif</h3>
+                        </div>
+                        <p>Rendre chaque élève <span class="font-bold">autonome et confiant</span> en mathématiques, en lui donnant les outils pour comprendre plutôt que mémoriser.</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-chart-line text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">Notre promesse</h3>
+                        </div>
+                        <p><span class="font-bold">+2,3 points de moyenne</span> en mathématiques garantis en 3 mois d'utilisation régulière de notre plateforme.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- La Méthode en 4 Étapes -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">La méthode SimosMaths en 4 étapes</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Un parcours progressif qui s'adapte au rythme de chaque élève</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <ol class="space-y-12 counter-reset">
+                    <!-- Étape 1 -->
+                    <li class="method-step pl-16 relative">
+                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-8 step-card">
+                            <div class="flex items-start mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center mr-6">
+                                    <i class="fas fa-search text-blue-500 text-2xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Diagnostic personnalisé</h3>
+                                    <p class="text-gray-600 mb-4">
+                                        Nous commençons par identifier précisément les points forts et les difficultés de l'élève grâce à notre test d'évaluation intelligent.
+                                    </p>
+                                    <ul class="space-y-2 text-gray-600">
+                                        <li class="flex items-center">
+                                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                            <span>Test adaptatif de 30 questions</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                            <span>Analyse des lacunes spécifiques</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                            <span>Plan d'apprentissage sur-mesure</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- Étape 2 -->
+                    <li class="method-step pl-16 relative">
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 step-card">
+                            <div class="flex items-start mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center mr-6">
+                                    <i class="fas fa-graduation-cap text-purple-500 text-2xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Apprentissage guidé</h3>
+                                    <p class="text-gray-600 mb-4">
+                                        L'élève suit des cours en vidéo interactifs et des explications détaillées étape par étape.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="bg-white p-4 rounded-xl">
+                                            <i class="fas fa-video text-blue-500 text-xl mb-2"></i>
+                                            <div class="font-medium">Vidéos Simos</div>
+                                            <div class="text-sm text-gray-500">Explications claires</div>
+                                        </div>
+                                        <div class="bg-white p-4 rounded-xl">
+                                            <i class="fas fa-lightbulb text-yellow-500 text-xl mb-2"></i>
+                                            <div class="font-medium">Astuces & méthodes</div>
+                                            <div class="text-sm text-gray-500">Techniques efficaces</div>
+                                        </div>
+                                        <div class="bg-white p-4 rounded-xl">
+                                            <i class="fas fa-book-open text-green-500 text-xl mb-2"></i>
+                                            <div class="font-medium">Fiches de révision</div>
+                                            <div class="text-sm text-gray-500">Synthèses claires</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- Étape 3 -->
+                    <li class="method-step pl-16 relative">
+                        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 step-card">
+                            <div class="flex items-start mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center mr-6">
+                                    <i class="fas fa-dumbbell text-green-500 text-2xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Entraînement intensif</h3>
+                                    <p class="text-gray-600 mb-4">
+                                        Pratique sur des exercices progressifs avec correction instantanée et détaillée.
+                                    </p>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <span class="font-medium">Exercices adaptatifs</span>
+                                                <span class="text-blue-600 font-bold">+2 487</span>
+                                            </div>
+                                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div class="h-full bg-gradient-to-r from-green-400 to-blue-500 w-3/4"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <span class="font-medium">Correction IA</span>
+                                                <span class="text-purple-600 font-bold">Instantannée</span>
+                                            </div>
+                                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div class="h-full bg-gradient-to-r from-purple-400 to-pink-500 w-4/5"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- Étape 4 -->
+                    <li class="method-step pl-16 relative">
+                        <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-8 step-card">
+                            <div class="flex items-start mb-6">
+                                <div class="w-16 h-16 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl flex items-center justify-center mr-6">
+                                    <i class="fas fa-chart-bar text-orange-500 text-2xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Suivi & Perfectionnement</h3>
+                                    <p class="text-gray-600 mb-4">
+                                        Analyse des progrès et recommandations personnalisées pour continuer à progresser.
+                                    </p>
+                                    <div class="flex items-center space-x-6">
+                                        <div class="text-center">
+                                            <div class="text-3xl font-bold text-blue-600">94%</div>
+                                            <div class="text-sm text-gray-500">Satisfaction</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-3xl font-bold text-green-600">+2.3pts</div>
+                                            <div class="text-sm text-gray-500">Moyenne améliorée</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-3xl font-bold text-purple-600">15h</div>
+                                            <div class="text-sm text-gray-500">Temps gagné/mois</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- Témoignages -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Ils ont adopté notre méthode</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Découvrez les témoignages des élèves et parents qui nous font confiance</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Témoignage 1 -->
+                <div class="testimonial-card rounded-2xl p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                            M
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold text-gray-900">Marie, maman de Lucas</div>
+                            <div class="text-gray-500">Lucas en 5ème</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic mb-4">
+                        "Lucas détestait les maths. Aujourd'hui, il fait ses exercices sans qu'on doive le rappeler. Sa moyenne est passée de 9 à 13 en 2 mois !"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="ml-2 text-gray-500">Il y a 1 mois</span>
+                    </div>
+                </div>
+                
+                <!-- Témoignage 2 -->
+                <div class="testimonial-card rounded-2xl p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
+                            T
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold text-gray-900">Thomas, Terminale</div>
+                            <div class="text-gray-500">Spécialité Maths</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic mb-4">
+                        "Les vidéos de Simos sur les dérivées et les intégrales m'ont sauvé ! J'ai compris en 2h ce que je n'avais pas compris en 2 mois de cours."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="ml-2 text-gray-500">Il y a 3 semaines</span>
+                    </div>
+                </div>
+                
+                <!-- Témoignage 3 -->
+                <div class="testimonial-card rounded-2xl p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold">
+                            S
+                        </div>
+                        <div class="ml-4">
+                            <div class="font-bold text-gray-900">Sophie, maman de Jade</div>
+                            <div class="text-gray-500">Jade en CM2</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic mb-4">
+                        "Les jeux éducatifs ont transformé l'apprentissage des tables de multiplication. Jade réclame maintenant de faire des maths !"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="ml-2 text-gray-500">Il y a 2 mois</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Prêt à transformer l'apprentissage des maths ?</h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Rejoignez les centaines d'élèves qui progressent déjà avec notre méthode
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <a href="tarifs.html" class="px-8 py-4 bg-white text-blue-600 text-lg font-bold rounded-xl hover:shadow-2xl transition-all hover:scale-105">
+                    <i class="fas fa-play-circle mr-3"></i>Démarrer l'essai gratuit
+                </a>
+                <a href="resultats.html" class="px-8 py-4 bg-transparent border-2 border-white text-white text-lg font-bold rounded-xl hover:bg-white/10 transition">
+                    <i class="fas fa-chart-line mr-3"></i>Voir nos résultats
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">Σ</span>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold">SimosMaths</div>
+                            <div class="text-sm opacity-80">du CP à la Terminale</div>
+                        </div>
+                    </div>
+                    <p class="opacity-80 mb-6">
+                        La plateforme d'accompagnement scolaire créée par Simos, ancien élève de prépa MPSI.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-facebook text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-instagram text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-tiktok text-xl"></i></a>
+                        <a href="#" class="opacity-80 hover:opacity-100"><i class="fab fa-youtube text-xl"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Niveaux</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="#" class="hover:text-blue-300">Primaire (CP-CM2)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Collège (6ème-3ème)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Lycée (2nde-Terminale)</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Spécialité Maths</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Ressources</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="methode.html" class="hover:text-blue-300">Notre méthode</a></li>
+                        <li><a href="resultats.html" class="hover:text-blue-300">Nos résultats</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Blog pédagogique</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Fiches gratuites</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-lg mb-6">Contact</h4>
+                    <ul class="space-y-3 opacity-80">
+                        <li><a href="mailto:contact@simosmaths.com" class="hover:text-blue-300">contact@simosmaths.com</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Support en ligne</a></li>
+                        <li><a href="#" class="hover:text-blue-300">FAQ</a></li>
+                        <li><a href="#" class="hover:text-blue-300">Devenir partenaire</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center opacity-80">
+                <p>© 2024 SimosMaths. Tous droits réservés. | Conçu avec passion par Simos</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                const menu = document.getElementById('mobileMenu');
+                menu.classList.toggle('hidden');
+            });
+            
+            // Smooth scroll
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                    
+                    // Close mobile menu if open
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                });
+            });
+            
+            // Animate elements on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('stagger-item');
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe elements to animate
+            document.querySelectorAll('.step-card, .testimonial-card').forEach(el => {
+                observer.observe(el);
+            });
+            
+            // Reset counter for ordered list
+            document.querySelector('.counter-reset').style.counterReset = 'step';
+            
+            // Auth buttons
+            const authButton = document.getElementById('authButton');
+            const authButtonMobile = document.getElementById('authButtonMobile');
+            
+            function handleAuthClick() {
+                // Rediriger vers la page de connexion
+                window.location.href = 'auth.html';
+            }
+            
+            if (authButton) authButton.addEventListener('click', handleAuthClick);
+            if (authButtonMobile) authButtonMobile.addEventListener('click', handleAuthClick);
+        });
+    </script>
+</body>
+</html>
